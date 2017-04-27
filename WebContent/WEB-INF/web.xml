@@ -11,18 +11,18 @@
   </welcome-file-list>
   <servlet>
     <servlet-name>Testing</servlet-name>
-    <servlet-class>com.Test</servlet-class>
+    <servlet-class>servlets.Test</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Testing</servlet-name>
     <url-pattern>/servlet/Test</url-pattern>
   </servlet-mapping>
   <servlet>
-  	<servlet-name>Login</servlet-name>
-  	<servlet-class>com.Login</servlet-class>
+    <servlet-name>Login</servlet-name>
+    <servlet-class>servlets.Login</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>Login</servlet-name>
-  	<url-pattern>/Login</url-pattern>
+    <servlet-name>Login</servlet-name>
+    <url-pattern>/Login</url-pattern>
   </servlet-mapping>
 </web-app>
