@@ -9,7 +9,7 @@
 <hr>
 <p>
 	Welcome ${sessionScope['username']}
-	<form action = "" method = "get">
+	<form action = "DisplayMovie" method = "get">
 		Search for movies: <br>
 		<input type ="text" name = "searchQuery"><br>
 	Browse by Genres: <br>

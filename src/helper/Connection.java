@@ -3,10 +3,14 @@ import java.sql.*;
 public class Connection {
 	private String username = "root";
 	private String password = "root";
+	private ResultSet result;
+	private Statement select;
 	private java.sql.Connection connection;
 	Connection()
 	{
+		result = null;
 		connection = null;
+		select = null;
 	}
 	public void connect() throws Exception
 	{
@@ -20,5 +24,33 @@ public class Connection {
      	   System.out.println("Database or Password is wrong");
  	   }
 	}
+	public String makeSearchQuery(String select, String from, String where)
+	{
+		return "select " + select + "from " + from + " where " + where;
+	}
+	public String makeUpdateQuery(String action, String from, String where)
+	{
+		// change this ïnsert into".. 
+		return action + "from " + from + " where " + where;
+	}
+	public void startQuery(String query) throws SQLException
+	{
+		try
+		{
+			select = connection.createStatement();
+			result = select.executeQuery(query);
+		}
+		catch (SQLException e)
+		{
+			System.out.println("failed to execute Query");
+		}
+		
+	}
+	public ResultSet getResultSet()
+	{
+		return result;
+	}
+	
+	
 	
 }
