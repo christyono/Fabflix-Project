@@ -2,6 +2,8 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import helper.Connection;
 
 /**
  * Servlet implementation class Login
@@ -36,7 +40,33 @@ public class Login extends HttpServlet {
 		
 		String name = request.getParameter("Username");
 		String password = request.getParameter("Password");
-		if (!name.isEmpty() && !password.isEmpty() && password.equals("yan") )
+		Connection c = new Connection();
+		try {
+			c.connect();
+		} catch (Exception e) {
+			System.out.println("Database or Password is wrong");
+		}
+		String nameID = "", passwordID = "";
+		try {
+			c.startQuery(c.makeSearchQuery("customers.id", "customers", "customers.email = '"+name+"'"));
+			while (c.getResultSet().next())
+			{
+				nameID = c.getResultSet().getString(1);
+			}
+		} catch (SQLException e) {
+			System.out.println("Invalid Query");
+		}
+		
+		try {
+			c.startQuery(c.makeSearchQuery("customers.id", "customers", "customers.password = '"+password+"'"));
+			while (c.getResultSet().next())
+			{
+				passwordID = c.getResultSet().getString(1);
+			}
+		} catch (SQLException e) {
+			System.out.println("Invalid Query");
+		}
+		if (nameID.equals(passwordID) && !nameID.equals("") && !passwordID.equals(""))
 		{
 			HttpSession session = request.getSession();
 			session.setAttribute("username", name);

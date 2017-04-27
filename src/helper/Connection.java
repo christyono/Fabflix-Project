@@ -6,7 +6,7 @@ public class Connection {
 	private ResultSet result;
 	private Statement select;
 	private java.sql.Connection connection;
-	Connection()
+	public Connection()
 	{
 		result = null;
 		connection = null;
@@ -26,7 +26,7 @@ public class Connection {
 	}
 	public String makeSearchQuery(String select, String from, String where)
 	{
-		return "select " + select + "from " + from + " where " + where;
+		return "select " + select + " from " + from + " where " + where + ";";
 	}
 	public String makeUpdateQuery(String action, String from, String where)
 	{
