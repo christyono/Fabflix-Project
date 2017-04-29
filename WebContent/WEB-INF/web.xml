@@ -17,9 +17,17 @@
     <servlet-name>Testing</servlet-name>
     <url-pattern>/servlet/Test</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>DisplayMovie</servlet-name>
+  	<url-pattern>/DisplayMovie</url-pattern>
+  </servlet-mapping>
   <servlet>
     <servlet-name>Login</servlet-name>
     <servlet-class>servlets.Login</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>DisplayMovie</servlet-name>
+  	<servlet-class>servlets.DisplayMovie</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Login</servlet-name>

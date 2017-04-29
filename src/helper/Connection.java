@@ -6,11 +6,14 @@ public class Connection {
 	private ResultSet result;
 	private Statement select;
 	private java.sql.Connection connection;
+
+	
 	public Connection()
 	{
 		result = null;
 		connection = null;
 		select = null;
+		
 	}
 	public void connect() throws Exception
 	{
@@ -26,6 +29,7 @@ public class Connection {
 	}
 	public String makeSearchQuery(String select, String from, String where)
 	{
+
 		return "select " + select + " from " + from + " where " + where + ";";
 	}
 	public String makeUpdateQuery(String action, String from, String where)
@@ -50,6 +54,23 @@ public class Connection {
 	{
 		return result;
 	}
+	public java.sql.Connection getConnection()
+	{
+		return connection;
+	}
+	public void close() throws SQLException
+	{
+		try
+		{
+			connection.close();
+		}
+		catch (SQLException e)
+		{
+			System.out.println("Failed to close SQL connection");
+		}
+		
+	}
+	
 	
 	
 	
