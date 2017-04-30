@@ -79,11 +79,19 @@ public class Login extends HttpServlet {
 		}
 		else
 		{
-			out.println("<h>Sorry, username or password is wrong</h>");
+			out.println("<br>Sorry, username or password is wrong<br>");
 			RequestDispatcher rs = request.getRequestDispatcher("/index.html");
 			rs.include(request, response);
 		}
 		out.close();
+		try
+		{
+			c.closeConnection();
+		}
+		catch (SQLException e)
+		{
+			System.out.println("Failed to close connection");
+		}
 	}
 
 	/**

@@ -18,19 +18,43 @@
     <url-pattern>/servlet/Test</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-  	<servlet-name>DisplayMovie</servlet-name>
-  	<url-pattern>/DisplayMovie</url-pattern>
+    <servlet-name>FindMovie</servlet-name>
+    <url-pattern>/FindMovie</url-pattern>
   </servlet-mapping>
   <servlet>
     <servlet-name>Login</servlet-name>
     <servlet-class>servlets.Login</servlet-class>
   </servlet>
   <servlet>
-  	<servlet-name>DisplayMovie</servlet-name>
-  	<servlet-class>servlets.DisplayMovie</servlet-class>
+    <servlet-name>FindMovie</servlet-name>
+    <servlet-class>servlets.FindMovie</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Login</servlet-name>
     <url-pattern>/Login</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>Logout</servlet-name>
+    <servlet-class>servlets.Logout</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Logout</servlet-name>
+    <url-pattern>/Logout</url-pattern>
+  </servlet-mapping>
+  <servlet>
+  	<servlet-name>GetMovie</servlet-name>
+  	<servlet-class>servlets.GetMovie</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>GetMovie</servlet-name>
+  	<url-pattern>/GetMovie</url-pattern>
+  </servlet-mapping>
+  <servlet>
+  	<servlet-name>GetStar</servlet-name>
+  	<servlet-class>servlets.GetStar</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>GetStar</servlet-name>
+  	<url-pattern>/GetStar</url-pattern>
   </servlet-mapping>
 </web-app>

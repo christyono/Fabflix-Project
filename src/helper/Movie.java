@@ -1,4 +1,5 @@
 package helper;
+import java.sql.Date;
 import java.util.ArrayList;
 
 public class Movie {
@@ -10,6 +11,7 @@ public class Movie {
 	private String trailerURL;
 	private int price;
 	private ArrayList<Star> listOfStars = new ArrayList<Star>();
+	private ArrayList<Genre> listOfGenres = new ArrayList<Genre>();
 	public Movie()
 	{
 		movieID = 0;
@@ -81,13 +83,22 @@ public class Movie {
 	public void setPrice(int price) {
 		this.price = price;
 	}
-	public void addStar(int starID, String firstName, String lastName, int dateOfBirth, String photoURL)
+	public void addStar(int starID, String firstName, String lastName, Date dateOfBirth, String photoURL)
 	{
 		Star movieStar = new Star(starID, firstName, lastName, dateOfBirth, photoURL);
 		listOfStars.add(movieStar);
 	}
+	public void addGenre(int genreID, String name)
+	{
+		Genre genre = new Genre(genreID, name);
+		listOfGenres.add(genre);
+	}
 	public ArrayList<Star> getStarList()
 	{
 		return listOfStars;
+	}
+	public ArrayList<Genre> getGenreList()
+	{
+		return listOfGenres;
 	}
 }
