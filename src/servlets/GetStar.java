@@ -59,7 +59,7 @@ public class GetStar extends HttpServlet {
 				if (star.getStarID() == starID)
 				{
 					desiredStar = star;
-					break;
+					//break;
 				}
 			}
 		}

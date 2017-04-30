@@ -53,7 +53,7 @@
 				%>
 				<tr>
 					<th></th>
-					<td> <a href = GetMovie?param1=<%=movie.getID()%>><%= movie.getTitle() %></a></td>
+					<td> <a href = GetMovie?param1=<%=movie.getID()%>&param2=<%=star.getStarID()%>><%= movie.getTitle() %></a></td>
 				</tr>
 				<%
 			}
@@ -62,7 +62,7 @@
 				%>
 				<tr>
 					<th>Starred Movies: </th>
-					<td> <a href = GetMovie?param1=<%=movie.getID()%>><%= movie.getTitle() %></a></td>
+					<td> <a href = GetMovie?param1=<%=movie.getID()%>&param2=<%=star.getStarID()%>><%= movie.getTitle() %></a></td>
 				</tr>
 				<%
 			}

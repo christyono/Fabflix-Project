@@ -33,10 +33,19 @@ public class GetMovie extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		
+		// What this servlet does:
+		// 1) given movieID, find the desiredmovie
+		// 2) given movieID and starID, find the given movie where the star is featured
+		
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 		PrintWriter out = response.getWriter();
-		String id = request.getParameter("param1");
-		int movieID = Integer.parseInt(id);
+		String id1 = request.getParameter("param1");
+		String id2 = request.getParameter("param2");
+		
+		int movieID = Integer.parseInt(id1);
+		int starID;
+		
 		HttpSession session = request.getSession(false);
 		
 		if (session == null)
@@ -48,16 +57,50 @@ public class GetMovie extends HttpServlet {
 		}
 		ArrayList<Movie> movieList = (ArrayList<Movie>)session.getAttribute("movieList");
 		Movie desiredMovie = null;
-		for (int i = 0; i < movieList.size(); i++)
+		if (id2 == null)
 		{
-			Movie movie = movieList.get(i);
-			if (movie.getID() == movieID)
+			for (int i = 0; i < movieList.size(); i++)
 			{
-				desiredMovie = movieList.get(i);
-				break;
+				Movie movie = movieList.get(i);
+				if (movie.getID() == movieID)
+				{
+					desiredMovie = movieList.get(i);
+					break;
+				}
 			}
 		}
+		
+		else
+		{
+			starID = Integer.parseInt(id2);
+			for (int i = 0; i < movieList.size(); i++)
+			{
+				Movie movie = movieList.get(i);
+				// make the second loop to search through the list of movies where the star is featured
+				for (int j = 0; j < movie.getStarList().size(); j++)
+				{
+					Star star = movieList.get(i).getStarList().get(j);
+					// given the star, find its starredMovieList
+					if (star.getStarID() == starID)
+					{
+						for (int k = 0; j < star.getStarredMovieList().size();k++)
+						{
+							// given the starredmovieList, find the correct movie
+							Movie m = star.getStarredMovieList().get(k);
+							if (movieID == m.getID())
+							{
+								desiredMovie = m;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		
 		request.setAttribute("currentMovie", desiredMovie);
+		out.println("desiredMovie Title: " + desiredMovie.getTitle());
 		RequestDispatcher rs = request.getRequestDispatcher("/DisplayMovie.jsp");
 		rs.forward(request, response);
 		

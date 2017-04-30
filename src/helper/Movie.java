@@ -59,12 +59,6 @@ public class Movie {
 	public void setDirector(String director) {
 		this.director = director;
 	}
-	public int getMovieID() {
-		return movieID;
-	}
-	public void setMovieID(int movieID) {
-		this.movieID = movieID;
-	}
 	public String getBannerURL() {
 		return bannerURL;
 	}
