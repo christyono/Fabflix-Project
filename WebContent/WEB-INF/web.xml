@@ -42,19 +42,27 @@
     <url-pattern>/Logout</url-pattern>
   </servlet-mapping>
   <servlet>
-  	<servlet-name>GetMovie</servlet-name>
-  	<servlet-class>servlets.GetMovie</servlet-class>
+    <servlet-name>GetMovie</servlet-name>
+    <servlet-class>servlets.GetMovie</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>GetMovie</servlet-name>
-  	<url-pattern>/GetMovie</url-pattern>
+    <servlet-name>GetMovie</servlet-name>
+    <url-pattern>/GetMovie</url-pattern>
   </servlet-mapping>
   <servlet>
-  	<servlet-name>GetStar</servlet-name>
-  	<servlet-class>servlets.GetStar</servlet-class>
+    <servlet-name>GetStar</servlet-name>
+    <servlet-class>servlets.GetStar</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>GetStar</servlet-name>
-  	<url-pattern>/GetStar</url-pattern>
+    <servlet-name>GetStar</servlet-name>
+    <url-pattern>/GetStar</url-pattern>
+  </servlet-mapping>
+  <servlet>
+  	<servlet-name>SortMovie</servlet-name>
+  	<servlet-class>servlets.SortMovie</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>SortMovie</servlet-name>
+  	<url-pattern>/SortMovie</url-pattern>
   </servlet-mapping>
 </web-app>

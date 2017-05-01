@@ -6,10 +6,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Search Results</title>
 </head>
 <body>
 	<h1> Welcome to Fabflix </h1>
+	<a href = "index.html">login</a>
+	<a href = main.jsp>main page</a>
+	<a href = Logout>logout</a>
 	<hr>
 	<p>
 		<%
@@ -18,19 +21,43 @@
 			%><a href = "index.html"> Please login first</a><%
 		}
 		else{
+			if (request.getAttribute("error") != null)
+			{
+				out.println(request.getAttribute("error") + "<br>");
+			}
+			if (request.getAttribute("searchParams") != null)
+			{
+				out.println("Currently searching using: " + request.getAttribute("searchParams") + "<br>");
+			}
 			%>
-			<a href = "index.html">login</a>
-			<a href = main.jsp>main page</a>
-			<a href = Logout>logout</a>
-			<br>
+			<form action = SortMovie method = get>
+				Sort By:  <br> 
+				<input type = radio name = "sortBy" value = "title"> Title <br>
+				<input type = radio name = "sortBy" value = "year">  Year <br>
+				Order: <br>
+				<input type = radio name = "order" value = "ascending"> Ascending <br>
+				<input type = radio name = "order" value = "descending"> Descending <br>
+				
+				<input type = submit value = "submit">
+			</form>
+			
 			<%
 		}
 		%>
-		Welcome ${sessionScope['username']} 
 		<br>
 		<%
 		// JAVA CODE BEGINS HERE
-		ArrayList<Movie> movieList = (ArrayList<Movie>) session.getAttribute("movieList");
+		
+		ArrayList<Movie> movieList;
+
+		if (request.getAttribute("sortedList") != null)
+		{
+			movieList = (ArrayList<Movie>) request.getAttribute("sortedList");
+		}
+		else
+		{
+			movieList = (ArrayList<Movie>) session.getAttribute("movieList");
+		}
 		//HTML CODE BEGINS HERE
 			%> <p><a href = 'AdvancedSearch.jsp'>Click here to make a new search</a></p>
 			

@@ -40,7 +40,7 @@ public class FindMovie extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-    private String makeMovieQuery(String title, String year, String director, String lastName, String firstName)
+    private String makeMovieQuery(String title, String year, String director, String firstName, String lastName)
     {
     	// NOTE: this function is used only within this class
     	// makeConditionalQuery will create the necessary search query for the movies only
@@ -58,7 +58,7 @@ public class FindMovie extends HttpServlet {
         			+ "and movies.year LIKE \"%s\" "
         			+ "and movies.director LIKE \"%s\" "
         			+ "and movies.id = stars_in_movies.movie_id "
-        			+ "and stars.id = stars_in_movies.star_id;", title, year, director, firstName, firstName);
+        			+ "and stars.id = stars_in_movies.star_id;", title, year, director);
     	}
     	else if (lastName.equals("%%"))
     	{
@@ -181,7 +181,14 @@ public class FindMovie extends HttpServlet {
 		}
 		try
 		{
-			
+			HttpSession session = request.getSession(false);
+			if (session == null)
+			{
+				out.println("<br>Please login first<br>");
+				RequestDispatcher rs = request.getRequestDispatcher("/index.html");
+				rs.include(request, response);
+				return;
+			}
 			String query = makeMovieQuery("%" + searchParams.get("title") + "%", 
 					"%" + searchParams.get("year") + "%",
 					"%" + searchParams.get("director") + "%",
@@ -190,6 +197,7 @@ public class FindMovie extends HttpServlet {
 			// these Strings are the search Queries
 			// NOTE: if user leaves one of the fields blank in the advanced search, the generated search query will be
 			// LIKE "%%" for that particular field, so that it doesn't match anything
+
 			//out.println(query);
 			c.startQuery(query);
 			Movie newMovie = null;
@@ -289,14 +297,7 @@ public class FindMovie extends HttpServlet {
 				
 			}
 			
-			HttpSession session = request.getSession(false);
-			if (session == null)
-			{
-				out.println("<br>Please login first<br>");
-				RequestDispatcher rs = request.getRequestDispatcher("/index.html");
-				rs.include(request, response);
-				return;
-			}
+			
 			if (session != null && session.getAttribute("movieList") != null)
 			{
 				session.removeAttribute("movieList");

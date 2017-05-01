@@ -26,6 +26,7 @@
 		<a href = main.jsp>main page</a>
 		<a href = Logout>logout</a>
 		<br>
+		
 		<%
 	}
 	Movie movie = (Movie)request.getAttribute("currentMovie");
