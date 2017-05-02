@@ -9,6 +9,13 @@
 </head>
 <body>
 	<h1> About Star </h1>
+	
+			<a href = "index.html">login</a>
+			<a href = main.jsp>main page</a>
+			<a href = Logout>logout</a>
+			<a href = ShoppingCart.jsp>shopping cart</a>
+			<br>
+			
 	<hr><br>
 	<a href = DisplaySearch.jsp>Go back to previous page</a>
 	
@@ -16,15 +23,6 @@
 	if (session.getAttribute("username") == null)
 		{
 			%><a href = "index.html"> Please login first</a><%
-		}
-		else
-		{
-			%>
-			<a href = "index.html">login</a>
-			<a href = main.jsp>main page</a>
-			<a href = Logout>logout</a>
-			<br>
-			<%
 		}
 	%>
 	<%Star star = (Star) request.getAttribute("currentStar");%>

@@ -106,7 +106,7 @@ public class Movie{
 	{
 		return listOfGenres;
 	}
-	// public static Comparator<Movie> is an "anonymous class"
+	// public static Comparator<Movie> is an "anonymous class", similar concept to the sort key from python
 	public static Comparator<Movie> AscendingTitleComparator = new Comparator<Movie>(){
 		public int compare(Movie m1, Movie m2){
 			// compare movies by title in ascending order (i.e a - z)

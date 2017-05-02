@@ -58,11 +58,27 @@
     <url-pattern>/GetStar</url-pattern>
   </servlet-mapping>
   <servlet>
-  	<servlet-name>SortMovie</servlet-name>
-  	<servlet-class>servlets.SortMovie</servlet-class>
+    <servlet-name>SortMovie</servlet-name>
+    <servlet-class>servlets.SortMovie</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>SortMovie</servlet-name>
-  	<url-pattern>/SortMovie</url-pattern>
+    <servlet-name>SortMovie</servlet-name>
+    <url-pattern>/SortMovie</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>Pagination</servlet-name>
+    <servlet-class>servlets.Pagination</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Pagination</servlet-name>
+    <url-pattern>/Pagination</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>GetGenre</servlet-name>
+    <servlet-class>servlets.GetGenre</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetGenre</servlet-name>
+    <url-pattern>/GetGenre</url-pattern>
   </servlet-mapping>
 </web-app>

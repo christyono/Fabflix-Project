@@ -4,102 +4,34 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 
-import javax.servlet.ServletException;
 import javax.servlet.RequestDispatcher;
-
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
-import java.util.*;
-
 import helper.Connection;
 import helper.Movie;
-import helper.Star;
 
 /**
- * Servlet implementation class DisplayMovie
+ * Servlet implementation class Browse
  */
-// @WebServlet("/DisplayMovie")
-public class FindMovie extends HttpServlet {
+@WebServlet("/BrowseGenre")
+public class BrowseGenre extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public FindMovie() {
+    public BrowseGenre() {
         super();
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-    private String makeMovieQuery(String title, String year, String director, String firstName, String lastName)
-    {
-    	// NOTE: this function is used only within this class
-    	// makeConditionalQuery will create the necessary search query for the movies only
-    	
-    	// LIKE: 
-    	// %__% substring matching, where __ pattern will be matched anywhere within string
-    	String query;
-    	if (firstName.equals("%%") && lastName.equals("%%"))
-    	{
-    		// if first and last name are empty, there's no need to include it as part of query
-    		
-    		query = String.format("select movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url "
-    				+ "from movies, stars_in_movies, stars "
-    				+ "where movies.title LIKE \"%s\" "
-        			+ "and movies.year LIKE \"%s\" "
-        			+ "and movies.director LIKE \"%s\" "
-        			+ "and movies.id = stars_in_movies.movie_id "
-        			+ "and stars.id = stars_in_movies.star_id;", title, year, director);
-    	}
-    	else if (lastName.equals("%%"))
-    	{
-    		// when only firstName is given, either firstName or lastName can have the "firstName" value
-    		query = String.format("select movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url "
-    				+ "from movies, stars_in_movies, stars "
-    				+ "where movies.title LIKE \"%s\" "
-        			+ "and movies.year LIKE \"%s\" "
-        			+ "and movies.director LIKE \"%s\" "
-        			+ "and movies.id = stars_in_movies.movie_id "
-        			+ "and stars.id = stars_in_movies.star_id "
-        			+ "and (stars.first_name LIKE \"%s\" or stars.last_name LIKE \"%s\");", title, year, director, firstName, firstName);
-    	}
-    	else if (firstName.equals("%%"))
-    	{
-    		// when only lastName is given, either firstName or lastName can have the "lastname" value
-    		query = String.format("select movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url "
-    				+ "from movies, stars_in_movies, stars "
-    				+ "where movies.title LIKE \"%s\" "
-        			+ "and movies.year LIKE \"%s\" "
-        			+ "and movies.director LIKE \"%s\" "
-        			+ "and movies.id = stars_in_movies.movie_id "
-        			+ "and stars.id = stars_in_movies.star_id "
-        			+ "and (stars.first_name LIKE \"%s\" or stars.last_name LIKE \"%s\");", title, year, director, lastName, lastName);
-    	}
-    	else
-    	{
-    		// if both first and last name are given, both are taken into account in the search query
-    		
-    		query = String.format("select movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url "
-    				+ "from movies, stars_in_movies, stars "
-    				+ "where movies.title LIKE \"%s\" "
-        			+ "and movies.year LIKE \"%s\" "
-        			+ "and movies.director LIKE \"%s\" "
-        			+ "and movies.id = stars_in_movies.movie_id "
-        			+ "and stars.id = stars_in_movies.star_id "
-        			+ "and stars.first_name LIKE \"%s\" "
-        			+ "and stars.last_name LIKE \"%s\";", title, year, director, firstName, lastName);
-    	}
-    	return query;
-    }
     private String makeStarredQuery(int starID)
     {
     	// based on star.id find all movies that the star has starred in
@@ -131,45 +63,18 @@ public class FindMovie extends HttpServlet {
     	return query;
     }
     
+    
+    
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		
-		
 		ArrayList<Movie> movieList = new ArrayList<Movie>();
 		
 		PrintWriter out = response.getWriter();
-		
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 		Connection c = new Connection();
-		
-		boolean allNull = true;
-		String [] urlParams = {"title", "year", "director", "first_name", "last_name"};
-		HashMap <String, String> searchParams = new HashMap<String, String>();
-		
-		// this function matches the parameter name with the request and adds into hashmap
-		
-		for (int i = 0; i < urlParams.length; i++)
-		{
-			searchParams.put(urlParams[i], request.getParameter(urlParams[i]));
-		}
-		
-//		for (int i = 0; i < searchParams.values().size(); i++)
-//		{
-//			
-//			if (searchParams.get(i) != null)
-//			{
-//				allNull = false;
-//				break;
-//			}
-//		}
-//		if (allNull == true)
-//		{
-//			
-//			out.println("<br><u> Please enter a keyword in at least one of the fields below </u><br>");
-//			RequestDispatcher rs = request.getRequestDispatcher("/DisplaySearch.jsp");
-//			rs.include(request, response);
-//		}
-		
-		
 		
 		try
 		{
@@ -189,16 +94,11 @@ public class FindMovie extends HttpServlet {
 				rs.include(request, response);
 				return;
 			}
-			String query = makeMovieQuery("%" + searchParams.get("title") + "%", 
-					"%" + searchParams.get("year") + "%",
-					"%" + searchParams.get("director") + "%",
-					"%" + searchParams.get("first_name") + "%",
-					"%" + searchParams.get("last_name") + "%");
-			// these Strings are the search Queries
-			// NOTE: if user leaves one of the fields blank in the advanced search, the generated search query will be
-			// LIKE "%%" for that particular field, so that it doesn't match anything
-
-			//out.println(query);
+			String query = "select movies.id, movies.title, movies.year, movies.director, movies.banner_url, movies.trailer_url "
+					+ "from movies, genres, genres_in_movies "
+					+ "where genres_in_movies.movie_id = movies.id "
+					+ "and genres_in_movies.genre_id = genres.id "
+					+ "and genres.name = \"" + request.getParameter("genre") + "\"";
 			c.startQuery(query);
 			Movie newMovie = null;
 			int counter = 0;
@@ -318,7 +218,6 @@ public class FindMovie extends HttpServlet {
 			RequestDispatcher rs = request.getRequestDispatcher("/DisplaySearch.jsp");
 			rs.forward(request, response);
 			c.closeConnection();
-			
 		}
 		catch (SQLException e)
 		{
@@ -329,10 +228,6 @@ public class FindMovie extends HttpServlet {
 		{
 			out.close();
 		}
-		
-		
-		
-		
 	}
 
 	/**

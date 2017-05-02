@@ -25,6 +25,7 @@
 		<a href = "index.html">login</a>
 		<a href = main.jsp>main page</a>
 		<a href = Logout>logout</a>
+		<a href = ShoppingCart.jsp> Shopping Cart</a>
 		<br>
 		
 		<%
@@ -111,13 +112,30 @@
 			<th >Price: </th>
 			<td > <%="$" + movie.getPrice()%></td>
 		</tr> 
+				
+		<tr>
+			<td>
+				<button onclick = "addToCart('<%=movie.getID() %>', '<%=movie.getTitle() %>', '<%=movie.getPrice()%>')"> Add to Cart </button>
+			</td>
+		</tr>
+		
 		<tr>
 			<th> Trailer: </th>
 			<td> Click <a href = <%= movie.getTrailerURL() %>>here </a>to watch the movie</td>
 		</tr>
+
 		<%
 	%>
 	<% session.removeAttribute("currentMovie"); %>
 	</table>
+	
+	<script>
+	function addToCart(p1, p2, p3){
+		window.open("quantity.jsp" + "?id="+p1+"&title="+p2+"&price="+p3,null,
+		 	"height=200,width=400,status=yes,toolbar=no,menubar=no,location=no");
+		      }
+	</script>
+	
+	
 </body>
 </html>

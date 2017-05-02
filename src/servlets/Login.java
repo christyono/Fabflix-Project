@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import helper.Connection;
+import helper.*;
 
 /**
  * Servlet implementation class Login
@@ -70,6 +70,8 @@ public class Login extends HttpServlet {
 		{
 			HttpSession session = request.getSession();
 			session.setAttribute("username", name);
+			ShoppingCart Cart = new ShoppingCart();
+			session.setAttribute("Cart", Cart);
 			RequestDispatcher rs = request.getRequestDispatcher("/main.jsp");
 			rs.include(request, response);
 			

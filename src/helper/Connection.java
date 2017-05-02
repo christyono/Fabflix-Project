@@ -63,10 +63,24 @@ public class Connection {
 		}
 		catch (SQLException e)
 		{
-			System.out.println("failed to execute Query");
+			e.printStackTrace();
+			System.out.println("From Connection: failed to execute Query");
 			
 		}
 		
+	}
+	public void executeUpdate(String query) throws SQLException
+	{
+		try
+		{
+			select = connection.createStatement();
+			int retID = select.executeUpdate(query);
+ 		    //System.out.println("Number of Rows Changed: " + retID);
+		}
+		catch (SQLException e)
+		{
+			System.out.println("From Connection: failed to execute Update");
+		}
 	}
 	public ResultSet getResultSet()
 	{

@@ -22,13 +22,11 @@
 		<a href = "index.html">login</a>
 		<a href = main.jsp>main page</a>
 		<a href = Logout>logout</a>
+		<a href = "ShoppingCart.jsp" >shopping cart</a>
 		<br>
 		Welcome ${sessionScope['username']} 
 		<p><a href =  "AdvancedSearch.jsp">Advanced Search</a></p>
-		Browse by Genres: <br>
-		<p><a href="" >Fantasy </a></p>
-		Browse by Titles: <br>
-		<p><a href="" >A </a></p>
+		<p><a href="GetGenre">Browse Movies</a></p>
 		<% 
 	}
 	%>
