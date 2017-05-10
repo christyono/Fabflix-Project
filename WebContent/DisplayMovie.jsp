@@ -89,10 +89,11 @@
 			Genre genre = movie.getGenreList().get(k);
 			if (k != 0)
 			{
+				// do not print the header if there is more than one first result
 				%>
 				<tr>
 					<th ></th>
-					<td > <%=genre.getName()%></td>
+					<td > <a href = "BrowseGenre?genre=<%=genre.getName()%>"><%=genre.getName() %></a></td>
 				</tr> 
 				<%
 			}
@@ -101,7 +102,7 @@
 				%>
 				<tr>
 					<th >Genres: </th>
-					<td ><%=genre.getName()%></td>
+					<td ><a href = "BrowseGenre?genre=<%=genre.getName()%>"><%=genre.getName() %></a></td>
 				</tr> 
 				
 				<%
