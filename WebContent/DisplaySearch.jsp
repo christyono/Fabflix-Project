@@ -76,7 +76,7 @@
 		}
 		//HTML CODE BEGINS HERE
 		%> <p><a href = 'AdvancedSearch.jsp'>Click here to make a new search</a></p>
-		<p><a href = 'Browse.jsp'>Click here to browse</a></p>
+		<p><a href = 'GetGenre'>Click here to browse</a></p>
 		<table width = "150" border = "0">
 		<%
 		// HTML CODE ENDS HERE
