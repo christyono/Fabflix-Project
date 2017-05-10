@@ -1,6 +1,22 @@
 # 122B-Project-2
 Project 2
 
+FILE LOCATIONS:
+
+Project2/WebContent/WEB-INF/classes/helper contains all the .class files for helper classes
+Project2/WebContent/WEB-INF/classes/servlets contains all the .class files for the servlets
+
+Project2/WebContent/WEB-INF/sources contains all .java source files
+Project2/WebContent contains all JSP files contains like-predicate.html and README.md
+
+HOW TO COMPILE:
+
+Assuming you are in working directory of the .java source files,
+javac -classpath "../../lib/servlet-api.jar;../../lib/mysql-connector-java-5.0.8-bin.jar;../" -d ../../classes --filename--.java
+
+the -d command will redirect the .class file to Project2/WebContent/WEB-INF/
+
+Project2/WebContent/reports
 Breakdown 5/1/17:
 
 Helper Files:

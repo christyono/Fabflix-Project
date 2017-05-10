@@ -38,23 +38,6 @@ public class Login extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 		
-		// VERIFY reCAPTCHA 
-		
-		String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
-		System.out.println("gRecaptchaResponse=" + gRecaptchaResponse);
-		// Verify CAPTCHA.
-		
-		boolean valid = VerifyUtils.verify(gRecaptchaResponse);
-		if (!valid) {
-		    //errorString = "Captcha invalid!";
-		    out.println("<HTML>" +
-				"<HEAD><TITLE>" +
-				"MovieDB: Error" +
-				"</TITLE></HEAD>\n<BODY>" +
-				"<P>Recaptcha WRONG!!!! </P></BODY></HTML>");
-		    return;
-		}
-		    
 		String name = request.getParameter("Username");
 		String password = request.getParameter("Password");
 		Connection c = new Connection();
@@ -90,7 +73,7 @@ public class Login extends HttpServlet {
 			ShoppingCart Cart = new ShoppingCart();
 			session.setAttribute("Cart", Cart);
 			RequestDispatcher rs = request.getRequestDispatcher("/main.jsp");
-			rs.forward(request, response);
+			rs.include(request, response);
 			
 			
 			//  call the main.html file
