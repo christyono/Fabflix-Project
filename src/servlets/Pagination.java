@@ -42,6 +42,7 @@ public class Pagination extends HttpServlet {
 		// TODO Auto-generated method stub
 		PrintWriter out = response.getWriter();
 		response.getWriter().append("Served at: ").append(request.getContextPath());
+		response.setContentType("text/html"); 
 		// Calculate Offset
 		int limit;
 		int pageNum;

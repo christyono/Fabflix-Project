@@ -39,6 +39,7 @@ public class GetMovie extends HttpServlet {
 		// 2) given movieID and starID, find the given movie where the star is featured
 		
 		response.getWriter().append("Served at: ").append(request.getContextPath());
+		response.setContentType("text/html"); 
 		PrintWriter out = response.getWriter();
 		String id1 = request.getParameter("param1");
 		String id2 = request.getParameter("param2");

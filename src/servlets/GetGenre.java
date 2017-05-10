@@ -40,6 +40,7 @@ public class GetGenre extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		response.getWriter().append("Served at: ").append(request.getContextPath());
+		response.setContentType("text/html"); 
 		Connection c = new Connection();
 		PrintWriter out = response.getWriter();
 		ArrayList<String> genreNameList = new ArrayList<String>();

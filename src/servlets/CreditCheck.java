@@ -58,6 +58,7 @@ public class CreditCheck extends HttpServlet {
     }
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		response.setContentType("text/html"); 
 		PrintWriter out = response.getWriter();
 		String[] urlParams = {"firstName", "lastName", "cardNum", "expDate", "expMonth", "expYear"};
 		HashMap <String, String> searchParams = new HashMap<String, String>();

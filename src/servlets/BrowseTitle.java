@@ -69,7 +69,7 @@ public class BrowseTitle extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		ArrayList<Movie> movieList = new ArrayList<Movie>();
-		
+		response.setContentType("text/html"); 
 		PrintWriter out = response.getWriter();
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 		Connection c = new Connection();

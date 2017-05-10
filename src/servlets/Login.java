@@ -35,9 +35,10 @@ public class Login extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		
 		PrintWriter out = response.getWriter();
 		response.getWriter().append("Served at: ").append(request.getContextPath());
-		
+		response.setContentType("text/html");  
 		// VERIFY reCAPTCHA 
 		
 		String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
@@ -99,6 +100,7 @@ public class Login extends HttpServlet {
 		else
 		{
 			out.println("<br>Sorry, username or password is wrong<br>");
+			
 			RequestDispatcher rs = request.getRequestDispatcher("/index.html");
 			rs.include(request, response);
 		}
