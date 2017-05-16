@@ -7,7 +7,9 @@ public class Connection {
 	private String password = "root";
 	private ResultSet result;
 	private Statement select;
+	private int retID;
 	private java.sql.Connection connection;
+	private CallableStatement proc;
 	
 	public Connection()
 	{
@@ -74,7 +76,7 @@ public class Connection {
 		try
 		{
 			select = connection.createStatement();
-			int retID = select.executeUpdate(query);
+			retID = select.executeUpdate(query);
  		    //System.out.println("Number of Rows Changed: " + retID);
 		}
 		catch (SQLException e)
@@ -82,6 +84,11 @@ public class Connection {
 			System.out.println("From Connection: failed to execute Update");
 		}
 	}
+	public int getRetID()
+	{
+		return retID;
+	}
+	
 	public ResultSet getResultSet()
 	{
 		// returns most recent results
@@ -112,6 +119,41 @@ public class Connection {
 		{
 			System.out.println("Failed to close SQL connection");
 		}
+		
+	}
+	public String prepareCall(String storedProcedure, Object...args) throws SQLException
+	{
+		try{
+			int count = 0;
+			int count2 = 1; 
+			for (Object o:args)
+			{
+				count ++;
+			}
+			String repeated = new String(new char[count]).replace("\0", ", ?");
+			System.out.println("{ call " + storedProcedure + "(?" + repeated+ ") }");
+			proc = connection.prepareCall("{ call " + storedProcedure + "(?" + repeated+ ") }");
+		    for (Object o:args)
+		    {
+		    	if(o instanceof String)
+		    	{
+		    		proc.setString(count2,(String) o);
+		    	}else if(o instanceof Integer)
+		    	{
+		    		proc.setInt(count2, (int) o);
+		    	}
+		    	count2++;
+		    }
+		    proc.registerOutParameter(count2, java.sql.Types.VARCHAR);
+		    proc.execute();
+		    return proc.getString(count2);
+		}
+		catch (SQLException e)
+		{
+			System.out.println("Failed to call stored procedure");
+			throw e;
+		}
+		
 		
 	}
 	
