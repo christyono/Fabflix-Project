@@ -37,24 +37,23 @@ public class Login extends HttpServlet {
 		// TODO Auto-generated method stub
 		
 		PrintWriter out = response.getWriter();
-		response.getWriter().append("Served at: ").append(request.getContextPath());
 		response.setContentType("text/html");  
 		// VERIFY reCAPTCHA 
 		
-		String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
-		System.out.println("gRecaptchaResponse=" + gRecaptchaResponse);
-		// Verify CAPTCHA.
-		
-		boolean valid = VerifyUtils.verify(gRecaptchaResponse);
-		if (!valid) {
-		    //errorString = "Captcha invalid!";
-		    out.println("<HTML>" +
-				"<HEAD><TITLE>" +
-				"MovieDB: Error" +
-				"</TITLE></HEAD>\n<BODY>" +
-				"<P>Recaptcha WRONG!!!! </P></BODY></HTML>");
-		    return;
-		}
+//		String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+//		System.out.println("gRecaptchaResponse=" + gRecaptchaResponse);
+//		// Verify CAPTCHA.
+//		
+//		boolean valid = VerifyUtils.verify(gRecaptchaResponse);
+//		if (!valid) {
+//		    //errorString = "Captcha invalid!";
+//		    out.println("<HTML>" +
+//				"<HEAD><TITLE>" +
+//				"MovieDB: Error" +
+//				"</TITLE></HEAD>\n<BODY>" +
+//				"<P>Recaptcha WRONG!!!! </P></BODY></HTML>");
+//		    return;
+//		}
 		    
 		String name = request.getParameter("Username");
 		String password = request.getParameter("Password");
@@ -90,7 +89,7 @@ public class Login extends HttpServlet {
 			session.setAttribute("username", name);
 			ShoppingCart Cart = new ShoppingCart();
 			session.setAttribute("Cart", Cart);
-			RequestDispatcher rs = request.getRequestDispatcher("/main.jsp");
+			RequestDispatcher rs = request.getRequestDispatcher("main.jsp");
 			rs.forward(request, response);
 			
 			
@@ -99,9 +98,8 @@ public class Login extends HttpServlet {
 		}
 		else
 		{
-			out.println("<br>Sorry, username or password is wrong<br>");
-			
-			RequestDispatcher rs = request.getRequestDispatcher("/index.html");
+			request.setAttribute("Incorrect", "Sorry, username or password is wrong");
+			RequestDispatcher rs = request.getRequestDispatcher("/LoginPage.jsp");
 			rs.include(request, response);
 		}
 		out.close();

@@ -5,30 +5,18 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" href="css/w3.css">
 <title>About Movie</title>
 </head>
 
+<jsp:include page = "FrontEnd/NavBar.jsp"/>
 <body>
-	<h1> About Movie </h1>
-	<hr>
-	<p>
-	<br>
 	<a href = DisplaySearch.jsp>Go back to previous page</a>
 	
-	<%
-	if (session.getAttribute("username") == null)
-	{
-		%><a href = "index.html"> Please login first</a><%
-	}
-	else{
-		%>
-		<a href = "index.html">login</a>
-		<a href = main.jsp>main page</a>
-		<a href = Logout>logout</a>
-		<a href = ShoppingCart.jsp> Shopping Cart</a>
-		<br>
 		
-		<%
+	<%
+	if (request.getAttribute("currentMovie") == null){
+		%> <div class = "w3-panel w3-red w3-large w3-padding">No Movies Were Found</div><%
 	}
 	Movie movie = (Movie)request.getAttribute("currentMovie");
 	%>
@@ -121,8 +109,16 @@
 		</tr>
 		
 		<tr>
+			<%if (movie.getTrailerURL() != null) 
+			{
+				%> 
 			<th> Trailer: </th>
+			
 			<td> Click <a href = <%= movie.getTrailerURL() %>>here </a>to watch the movie</td>
+			<% 
+			}
+			%>
+			
 		</tr>
 
 		<%

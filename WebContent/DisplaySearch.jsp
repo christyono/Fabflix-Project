@@ -6,20 +6,15 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" href="css/w3.css">
 <title>Search Results</title>
 </head>
+<jsp:include page = "FrontEnd/NavBar.jsp"/>
 <body>
-	<h1> Welcome to Fabflix </h1>
-	<a href = "index.html">login</a>
-	<a href = main.jsp>main page</a>
-	<a href = Logout>logout</a>
-	<a href = ShoppingCart.jsp>shopping cart</a>
-	<hr>
-	<p>
 		<%
 		if (session.getAttribute("username") == null)
 		{
-			%><a href = "index.html"> Please login first</a><%
+			%><div class = "w3-panel w3-red w3-large w3-padding"><a href = "index.html"> Please login first</a></div>"<%
 		}
 		
 
@@ -77,7 +72,7 @@
 		//HTML CODE BEGINS HERE
 		%> <p><a href = 'AdvancedSearch.jsp'>Click here to make a new search</a></p>
 		<p><a href = 'GetGenre'>Click here to browse</a></p>
-		<table width = "150" border = "0">
+		<table class = "w3-table" width = "150" border = "0" style = "float:left;display:inline;">
 		<%
 		// HTML CODE ENDS HERE
 		// basically the <td> are forming a table, in place of out.println()

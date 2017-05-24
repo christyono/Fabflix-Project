@@ -5,56 +5,34 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<link rel="stylesheet" href="css/w3.css">
+<title>Advanced Search</title>
 </head>
+<jsp:include page = "FrontEnd/NavBar.jsp"/>
 <body>
-<h1> Welcome to Fabflix </h1>
-	<a href = "index.html">login</a>
-	<a href = main.jsp>main page</a>
-	<a href = Logout>logout</a>
-	<a href = ShoppingCart.jsp>shopping cart</a>
-<hr>
-<p>
-	<%if (session.getAttribute("username") == null)
-	{
-		%><a href = "index.html"> Please login first</a><%
-	}
-	%>
-	<br>
-	Please enter keywords into search bar.
-	<br>
-	<form action = "FindMovie" method = "get">
-	<table>
-		<tr> 
-			<th >Search for movies: </th>
-		</tr>
-		<tr>
-			<th >Title:</th>
-			<td ><input type="text" name="title" /></td>
-		</tr>
-		<tr>
-			<th>Year:</th>
-			<td><input type = "text" name = "year" /></td>
-		</tr>
-		<tr>
-			<th>Director:</th>
-			<td><input type = "text" name = "director"/></td>
-		</tr>
-		<tr>
-			<th>Star First Name: </th>
-			<td><input type = "text" name = "first_name"/></td>
-		</tr>
-		<tr>
-			<th>Star Last Name: </th>
-			<td><input type = "text" name = "last_name"/></td>
-		</tr>
-		<tr>
-		<td align = "left"><input type = "submit" value = "Submit"/></td>
-		</tr>
-		
-		
-	</table>
-	</form>
-</p>
+	<div class = "w3-cell-row w3-padding-24">
+		<form class = "w3-container w3-card-4 w3-mobile w3-margin w3-light-grey" action = "FindMovie" method = "get">
+			<h2 class = "w3-center">Advanced Search</h2>
+			<div class = "w3-row w3-section"></div>
+				<div class = "w3-col s3"><label class = "w3-text-blue" style="width:50px"><b>Title: </b></label></div>
+				<div class = "w3-col s9"><input class = "w3-input w3-border" name = "title" type = "text"></div>
+			<div class = "w3-row w3-section"></div>
+				<div class = "w3-col s3"> <label class = "w3-text-blue" style="width:50px"><b>Year: </b></label></div>
+				<div class = "w3-col s9"> <input class = "w3-input w3-border" type ="text" name = "year"> </div>
+			<div class = "w3-row w3-section"></div>
+				<div class = "w3-col s3"> <label class = "w3-text-blue" style="width:50px"><b>Director: </b></label></div>
+				<div class = "w3-col s9"> <input class = "w3-input w3-border" type ="text" name = "director"> </div>
+			<div class = "w3-row w3-section"></div>
+				<div class = "w3-col s3"> <label class = "w3-text-blue" style="width:50px"><b>Star's First Name: </b></label></div>
+				<div class = "w3-col s9"> <input class = "w3-input w3-border" type ="text" name = "first_name"> </div>
+			<div class = "w3-row w3-section"></div>
+				<div class = "w3-col s3"> <label class = "w3-text-blue" style="width:50px"><b>Star's Last Name: </b></label></div>
+				<div class = "w3-col s9"> <input class = "w3-input w3-border" type ="text" name = "last_name"> </div>
+			<div class = "w3-row w3-section"></div>
+			<button class = "w3-button w3-block w3-section w3-green w3-padding">Submit</button>
+		</form>
+	</div>
+
+
 </body>
 </html>

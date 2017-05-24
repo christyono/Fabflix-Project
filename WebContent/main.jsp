@@ -5,35 +5,18 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Fabflix Homepage</title>
+<link rel="stylesheet" href="css/w3.css">
 </head>
+<jsp:include page = "FrontEnd/NavBar.jsp"/>
 <body>
-
-<h1> Welcome to Fabflix </h1>
-<hr>
-<p>
 	
-	<br>
-	<%if (session.getAttribute("username") == null)
-	{
-		%><a href = "index.html"> Please login first</a><%
-	}
-	else{
-		%>
-		<a href = "index.html">login</a>
-		<a href = main.jsp>main page</a>
-		<a href = Logout>logout</a>
-		<a href = "ShoppingCart.jsp" >shopping cart</a>
-		<br>
+	<div class = "w3-panel-large w3-round jw3-teal w3-padding">
 		Welcome ${sessionScope['username']} 
-		<p><a href =  "AdvancedSearch.jsp">Advanced Search</a></p>
+	</div>
+	<div class = "w3-container w3-blue">
+		<p><a href = "AdvancedSearch.jsp">Advanced Search</a></p>
 		<p><a href="GetGenre">Browse Movies</a></p>
-		<% 
-	}
-	%>
-	
-		
-	
-</p>
+	</div>
 </body>
 </html>
 </body>

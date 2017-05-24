@@ -28,16 +28,14 @@ public class Logout extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
 		response.setContentType("text/html");  
         PrintWriter out=response.getWriter();  
-           
-        request.getRequestDispatcher("index.html").include(request, response);  
+        request.setAttribute("logout", "You have successfully logged out");
+        request.getRequestDispatcher("/LoginPage.jsp").include(request, response);  
            
         HttpSession session=request.getSession();  
         session.invalidate();  
            
-        out.println("<br>You have logged out<br>");  
            
         out.close();  
 	}

@@ -5,30 +5,14 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" href="css/w3.css">
 <title>Browse</title>
 </head>
+
+<jsp:include page = "FrontEnd/NavBar.jsp"/>
 <body>
-	<h1> Welcome to Fabflix </h1>
-<hr>
 <p>
-	<%if (session.getAttribute("username") == null)
-	{
-		%><a href = "index.html"> Please login first</a><%
-	}
-	else
-	{
-		%>
-		<a href = "index.html">login</a>
-		<a href = main.jsp>main page</a>
-		<a href = Logout>logout</a>
-		<a href = ShoppingCart.jsp>shopping cart</a>
-		<br>
-		<% 
 		
-	}
-	%>
-	Welcome ${sessionScope['username']}
-	<br>
 	<%
 	ArrayList<String> genreNameList = new ArrayList<String>();
 	genreNameList = (ArrayList<String>) session.getAttribute("genreNameList");
@@ -38,8 +22,9 @@
 	    alphaList.add(""+s.charAt(i));
 	}
 	%>
-	Browse by Genres: 
-	<table style="width:100%">
+	<div class = "w3-container w3-padding">
+	<div class = "w3-panel w3-light-grey w3-large">Browse by Titles:</div>
+	<table class = "w3-table w3-striped w3-padding w3-bordered w3-mobile" style="width:100%">
 	<%
 	for(int i = 0; i < genreNameList.size(); i++)
 	{
@@ -60,8 +45,11 @@
 	}
 	%>
 	</table>
-	Browse by Titles:
-	<table style="width:100%">
+	</div>
+	
+	<div class = "w3-container w3-padding">
+	<div class = "w3-panel w3-light-grey w3-large">Browse by Titles:</div>
+	<table class = "w3-table w3-striped w3-padding w3-bordered  w3-mobile" style="width:100%">
 	<%
 	for(int i = 0; i < alphaList.size(); i++)
 	{
@@ -81,6 +69,10 @@
 		}
 	}
 	%>
+	</table>
+	</div>
+	
+	
 	
 </p>
 </body>
