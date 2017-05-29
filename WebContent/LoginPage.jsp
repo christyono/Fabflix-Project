@@ -35,7 +35,7 @@
 		<label class = "w3-text-blue"><b>Username</b></label>
 		<input class = "w3-input w3-border" type ="text" name = "Username"><br>
 		<label class = "w3-text-blue"><b>Password</b></label>
-		<input class = "w3-input w3-border" type ="text" name = "Password"><br>
+		<input class = "w3-input w3-border" type ="password" name = "Password"><br>
 		<button class = "w3-button w3-round w3-green">Submit</button>
 	</form>
 	<div class="g-recaptcha" data-sitekey="6LfcBSAUAAAAAHVRxVudl2NHzd94H6jH5UROCx8I"></div>

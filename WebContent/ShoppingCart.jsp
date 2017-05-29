@@ -6,15 +6,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Shopping Cart</title>
+<jsp:include page = "FrontEnd/NavBar.jsp">
 </head>
 <body>
-	<h1> Welcome to Fabflix </h1>
 	
-	<a href = "index.html">login</a>
-	<a href = main.jsp>main page</a>
-	<a href = Logout>logout</a>
-	<a href = ShoppingCart.jsp> Shopping Cart</a>
-	<hr>
 <% 
 	ShoppingCart Cart = (ShoppingCart)session.getAttribute("Cart");
 	for(int i = 0; i < Cart.getLength(); i++){

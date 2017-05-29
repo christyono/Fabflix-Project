@@ -1,12 +1,40 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<link rel="stylesheet" type = "text/css" href="../css/w3.css">
+<link rel="stylesheet" type = "text/css" href="/Fabflix/css/w3.css">
+<!-- <script src = "DisplayOutput.js" type = "text/javascript"> -->
+
+<!-- </script> -->
+
+<script src = "/Fabflix/FrontEnd/Test.js">
+</script>
 </head>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+	$(document).on("keyup", '#autocomplete', function(){
+		console.log("Hello");
+		if ($("#autocomplete").val().length > 2){
+			var $select = $("#json-datalist");
+			$select.empty();
+			$.get("/Fabflix/AutoCompleteSearch?query=" + $("#autocomplete").val(), function(responseJson){
+				console.log("In responseJson");
+				console.log(responseJson);
+				if (!$.isArray(responseJson) || !responseJson.length){
+					console.log("responseJson is empty");
+				}
+				$.each(responseJson, function(index, item){
+					console.log("adding option nodes");
+					$("<option>").text(item).appendTo($select);
+				});
+			});	
+		}
+		
+	});
+</script>
 <body>
 <!-- header -->
  	<header class="w3-display-container w3-wide w3-content w3-mobile" style = "max-width:1500px">
@@ -20,20 +48,26 @@
 	{
 		%>
 		<div class = "w3-panel w3-red">
-		<a href = "index.html"> Please login first</a>
+		<a href = "/Fabflix/LoginPage.jsp"> Please login first</a>
 		</div>
 		<%
 	}
 	else{
 		%>
-			<div class="w3-bar w3-border w3-green w3-mobile w3-padding w3-round">
-				<a href="LoginPage.jsp" class="w3-bar-item w3-button w3-mobile">Login</a>
-				<a href="main.jsp" class="w3-bar-item w3-button w3-mobile">Main Page</a>
-				<a href="Logout" class="w3-bar-item w3-button w3-mobile">Logout</a>
-				<a href="ShoppingCart.jsp" class="w3-bar-item w3-button w3-mobile w3-padding">Shopping Cart</a>
-				<input type="text" class="w3-bar-item w3-input w3-mobile" placeholder="Search..">
-				<a href="#" class="w3-bar-item w3-button w3-green w3-mobile">Go</a>
-			</div>
+			<form class="w3-bar w3-border w3-green w3-mobile w3-padding w3-round" action = "/Fabflix/FindMovie">
+				<a href="/Fabflix/LoginPage.jsp" class="w3-bar-item w3-button w3-mobile">Login</a>
+				<a href="/Fabflix/main.jsp" class="w3-bar-item w3-button w3-mobile">Main Page</a>
+				<a href="/Fabflix/Logout" class="w3-bar-item w3-button w3-mobile">Logout</a> 
+				<a href="/Fabflix/ShoppingCart.jsp" class="w3-bar-item w3-button w3-mobile w3-padding">Shopping Cart</a> 
+				<input type="text" class="w3-bar-item w3-mobile" list = 'json-datalist' name = "title" id = 'autocomplete' autocomplete="off" placeholder="Search..">
+				<datalist id = 'json-datalist'>
+				</datalist> 
+				<input type="hidden" name="year" value="" /> 
+				<input type="hidden" name="director" value="" /> 
+				<input type="hidden" name="first_name" value="" /> 
+				<input type="hidden" name="last_name" value="" />
+				 <button class="w3-button w3-green w3-mobile">Go</button> 
+				 </form>
 
 		<% 
 	}

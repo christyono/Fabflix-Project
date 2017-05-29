@@ -5,7 +5,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Fabflix Homepage</title>
-<link rel="stylesheet" href="css/w3.css">
+<link rel="stylesheet" href="/Fabflix/css/w3.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <jsp:include page = "FrontEnd/NavBar.jsp"/>
 <body>

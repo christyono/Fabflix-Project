@@ -8,6 +8,54 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="css/w3.css">
 <title>Search Results</title>
+<style>
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 300px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -150px;
+
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -10px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+</style>
 </head>
 <jsp:include page = "FrontEnd/NavBar.jsp"/>
 <body>
@@ -114,8 +162,64 @@
 				</tr>
 				<tr>
 					<th >Title:</th>
-					<td><a href = "GetMovie?param1=<%=movieList.get(i).getID() %>" ><%=movieList.get(i).getTitle()%></a> </td>
+					<td class="tooltip" onmouseover="mOver(<%=movieList.get(i).getID()%>)"><a href="GetMovie?param1=<%=movieList.get(i).getID() %>"><%=movieList.get(i).getTitle()%> </a>
+					<span class="tooltiptext" id = <%=movieList.get(i).getID() %>>
+					<table id = <%=movieList.get(i).getID() %>>
+								<tr>
+									<th align = left colspan = "2"> <img src = <%=movieList.get(i).getBannerURL() %> width = 150> </th>
+								</tr>
+								<%
+				for (int j = 0; j < movieList.get(i).getStarList().size(); j++)
+				{
+					Star star = movieList.get(i).getStarList().get(j);
 					
+					if (j != 0)
+					{
+						%>
+						<tr>
+							<th ></th>
+							<td > <a href = "GetStar?param1=<%=star.getStarID()%>"><%=star.getFirstName() + " " + star.getLastName()  %></a></td>
+						</tr> 
+						<% 
+					}
+					else
+					{
+						%>
+						<tr>
+							<th >Stars: </th>
+							<td > <a href = "GetStar?param1=<%=star.getStarID()%>"><%=star.getFirstName() + " " + star.getLastName()  %></td>
+						</tr> 
+						<% 
+					}
+				}%>
+				<tr>
+					<th>Year:</th>
+					<td> <%=movieList.get(i).getYear()%></td>
+				</tr>
+				<tr>
+					<th >Price: </th>
+					<td > <%="$" + movieList.get(i).getPrice()%></td>
+				</tr> 
+				<tr>
+					<td>
+						<button onclick = "addToCart('<%=movieList.get(i).getID() %>', '<%=movieList.get(i).getTitle() %>', '<%=movieList.get(i).getPrice()%>')"> Add to Cart </button>
+					</td>
+				</tr>
+				<tr>
+			<%if (movieList.get(i).getTrailerURL() != null) 
+			{
+				%> 
+			<th> Trailer: </th>
+			
+			<td> Click <a href = <%= movieList.get(i).getTrailerURL() %>>here </a>to watch the movie</td>
+			<% 
+			}
+			%>
+			
+		</tr>
+				
+							
+							</table></span>
 				</tr>
 				<tr>
 					<th>Year:</th>
@@ -216,7 +320,71 @@
 				</tr>
 				<tr>
 					<th >Title:</th>
-					<td><a href = "GetMovie?param1=<%=movieList.get(i).getID() %>" ><%=movieList.get(i).getTitle()%></a> </td>
+					<td class="tooltip" onmouseover="mOver(<%=movieList.get(i).getID()%>)"><a href="GetMovie?param1=<%=movieList.get(i).getID() %>"><%=movieList.get(i).getTitle()%> </a>
+					<span class="tooltiptext" id = <%=movieList.get(i).getID() %>>
+					<table id = <%=movieList.get(i).getID() %>>
+								<tr>
+									<th align = left colspan = "2"> <img src = <%=movieList.get(i).getBannerURL() %> width = 150> </th>
+								</tr>
+								<%
+				for (int j = 0; j < movieList.get(i).getStarList().size(); j++)
+				{
+					Star star = movieList.get(i).getStarList().get(j);
+					
+					if (j != 0)
+					{
+						%>
+						<tr>
+							<th ></th>
+							<td > <a href = "GetStar?param1=<%=star.getStarID()%>"><%=star.getFirstName() + " " + star.getLastName()  %></a></td>
+						</tr> 
+						<% 
+					}
+					else
+					{
+						%>
+						<tr>
+							<th >Stars: </th>
+							<td > <a href = "GetStar?param1=<%=star.getStarID()%>"><%=star.getFirstName() + " " + star.getLastName()  %></td>
+						</tr> 
+						<% 
+					}
+				}%>
+				<tr>
+					<th>Year:</th>
+					<td> <%=movieList.get(i).getYear()%></td>
+				</tr>
+				<tr>
+					<th >Price: </th>
+					<td > <%="$" + movieList.get(i).getPrice()%></td>
+				</tr> 
+				<tr>
+					<td>
+						<button onclick = "addToCart('<%=movieList.get(i).getID() %>', '<%=movieList.get(i).getTitle() %>', '<%=movieList.get(i).getPrice()%>')"> Add to Cart </button>
+					</td>
+				</tr>
+				<tr>
+			<%if (movieList.get(i).getTrailerURL() != null) 
+			{
+				%> 
+			<th> Trailer: </th>
+			
+			<td> Click <a href = <%= movieList.get(i).getTrailerURL() %>>here </a>to watch the movie</td>
+			<% 
+			}
+			%>
+			
+		</tr>
+				
+							
+							</table></span>
+					<script>
+					function mOver(id) {
+					    var popup = document.getElementById(id);
+					    popup.classList.toggle("show");
+					}
+					</script>
+				</td>
 					
 				</tr>
 				<tr>

@@ -125,28 +125,27 @@
     <url-pattern>/EmployeeLogout</url-pattern>
   </servlet-mapping>
   <servlet>
-  	<servlet-name>InsertStar</servlet-name>
-  	<servlet-class>servlets.InsertStar</servlet-class>
+    <servlet-name>InsertStar</servlet-name>
+    <servlet-class>servlets.InsertStar</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>InsertStar</servlet-name>
-  	<url-pattern>/InsertStar</url-pattern>
+    <servlet-name>InsertStar</servlet-name>
+    <url-pattern>/InsertStar</url-pattern>
   </servlet-mapping>
   <servlet>
-  	<servlet-name>ShowMetadata</servlet-name>
-  	<servlet-class>servlets.ShowMetadata</servlet-class>
+    <servlet-name>ShowMetadata</servlet-name>
+    <servlet-class>servlets.ShowMetadata</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>ShowMetadata</servlet-name>
-  	<url-pattern>/ShowMetadata</url-pattern>
+    <servlet-name>ShowMetadata</servlet-name>
+    <url-pattern>/ShowMetadata</url-pattern>
   </servlet-mapping>
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>HTTPSOnly</web-resource-name>
-      <url-pattern>/*</url-pattern>
-    </web-resource-collection>
-    <user-data-constraint>
-      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-    </user-data-constraint>
-  </security-constraint>
+  <servlet>
+    <servlet-name>AutoCompleteSearch</servlet-name>
+    <servlet-class>servlets.AutoCompleteSearch</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AutoCompleteSearch</servlet-name>
+    <url-pattern>/AutoCompleteSearch</url-pattern>
+  </servlet-mapping>
 </web-app>

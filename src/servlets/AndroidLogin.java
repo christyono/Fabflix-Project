@@ -1,31 +1,33 @@
 package servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import helper.*;
+import com.google.gson.Gson;
 
+import helper.Connection;
+
+
+import java.io.PrintWriter;
+import java.sql.SQLException;
 /**
- * Servlet implementation class Login
+ * Servlet implementation class AndroidLogin
  */
-
-public class Login extends HttpServlet {
+@WebServlet("/AndroidLogin")
+public class AndroidLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Login() {
+    public AndroidLogin() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -35,7 +37,6 @@ public class Login extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");  
 		// VERIFY reCAPTCHA 
@@ -55,8 +56,8 @@ public class Login extends HttpServlet {
 //		    return;
 //		}
 		    
-		String name = request.getParameter("Username");
-		String password = request.getParameter("Password");
+		String name = request.getParameter("username");
+		String password = request.getParameter("password");
 		Connection c = new Connection();
 		try {
 			c.connect();
@@ -88,20 +89,23 @@ public class Login extends HttpServlet {
 		{
 			HttpSession session = request.getSession();
 			session.setAttribute("username", name);
-			ShoppingCart Cart = new ShoppingCart();
-			session.setAttribute("Cart", Cart);
-			RequestDispatcher rs = request.getRequestDispatcher("main.jsp");
-			rs.forward(request, response);
-			
-			
-			//  call the main.html file
+			Gson gsonObject= new Gson();
+			String json = gsonObject.toJson("success"); 
+			response.getWriter().println(json);
+			response.setContentType("application/json"); 
+			response.setCharacterEncoding("UTF-8");
+		    response.getWriter().write(json);
+
 			
 		}
 		else
 		{
-			request.setAttribute("Incorrect", "Sorry, username or password is wrong");
-			RequestDispatcher rs = request.getRequestDispatcher("/LoginPage.jsp");
-			rs.include(request, response);
+			Gson gsonObject= new Gson();
+			String json = gsonObject.toJson("incorrect"); 
+			response.getWriter().println(json);
+			response.setContentType("application/json"); 
+			response.setCharacterEncoding("UTF-8");
+		    response.getWriter().write(json);
 		}
 		out.close();
 		try
