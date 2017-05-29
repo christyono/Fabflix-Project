@@ -148,4 +148,20 @@
     <servlet-name>AutoCompleteSearch</servlet-name>
     <url-pattern>/AutoCompleteSearch</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>AndroidLogin</servlet-name>
+    <servlet-class>servlets.AndroidLogin</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AndroidLogin</servlet-name>
+    <url-pattern>/AndroidLogin</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>AndroidSearch</servlet-name>
+    <servlet-class>servlets.AndroidSearch</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AndroidSearch</servlet-name>
+    <url-pattern>/AndroidSearch</url-pattern>
+  </servlet-mapping>
 </web-app>

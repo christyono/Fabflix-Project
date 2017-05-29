@@ -6,7 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Shopping Cart</title>
-<jsp:include page = "FrontEnd/NavBar.jsp">
+<jsp:include page = "FrontEnd/NavBar.jsp"/>
 </head>
 <body>
 	

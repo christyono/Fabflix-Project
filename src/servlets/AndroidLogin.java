@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
+//import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +20,7 @@ import java.sql.SQLException;
 /**
  * Servlet implementation class AndroidLogin
  */
-@WebServlet("/AndroidLogin")
+//@WebServlet("/AndroidLogin")
 public class AndroidLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -37,7 +37,9 @@ public class AndroidLogin extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		
 		PrintWriter out = response.getWriter();
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 		response.setContentType("text/html");  
 		// VERIFY reCAPTCHA 
 		
@@ -58,6 +60,7 @@ public class AndroidLogin extends HttpServlet {
 		    
 		String name = request.getParameter("username");
 		String password = request.getParameter("password");
+		
 		Connection c = new Connection();
 		try {
 			c.connect();

@@ -185,7 +185,7 @@ public class FindMovie extends HttpServlet {
 			if (session == null)
 			{
 				out.println("<br>Please login first<br>");
-				RequestDispatcher rs = request.getRequestDispatcher("/index.html");
+				RequestDispatcher rs = request.getRequestDispatcher("/LoginPage.jsp");
 				rs.include(request, response);
 				return;
 			}
