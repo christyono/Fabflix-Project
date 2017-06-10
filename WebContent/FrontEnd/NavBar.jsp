@@ -13,7 +13,7 @@
 </script>
 </head>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
 	$(document).on("keyup", '#autocomplete', function(){
 		console.log("Hello");

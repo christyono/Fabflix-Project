@@ -38,9 +38,6 @@ public class AndroidLogin extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
-		PrintWriter out = response.getWriter();
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-		response.setContentType("text/html");  
 		// VERIFY reCAPTCHA 
 		
 //		String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
@@ -94,23 +91,20 @@ public class AndroidLogin extends HttpServlet {
 			session.setAttribute("username", name);
 			Gson gsonObject= new Gson();
 			String json = gsonObject.toJson("success"); 
-			response.getWriter().println(json);
 			response.setContentType("application/json"); 
 			response.setCharacterEncoding("UTF-8");
-		    response.getWriter().write(json);
+			response.getWriter().write(json);
 
 			
 		}
 		else
 		{
 			Gson gsonObject= new Gson();
-			String json = gsonObject.toJson("incorrect"); 
-			response.getWriter().println(json);
+			String json = gsonObject.toJson("Incorrect Username or Password"); 
 			response.setContentType("application/json"); 
 			response.setCharacterEncoding("UTF-8");
 		    response.getWriter().write(json);
 		}
-		out.close();
 		try
 		{
 			c.closeConnection();

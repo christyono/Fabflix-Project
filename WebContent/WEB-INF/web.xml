@@ -4,6 +4,9 @@
   <welcome-file-list>
     <welcome-file>LoginPage.jsp</welcome-file>
   </welcome-file-list>
+  <listener>
+	<listener-class>helper.ConnectionPool2</listener-class>
+   </listener>
   <servlet>
     <servlet-name>Testing</servlet-name>
     <servlet-class>servlets.Test</servlet-class>
@@ -164,4 +167,39 @@
     <servlet-name>AndroidSearch</servlet-name>
     <url-pattern>/AndroidSearch</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>AddMovie</servlet-name>
+    <servlet-class>servlets.AddMovie</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AddMovie</servlet-name>
+    <url-pattern>/AddMovie</url-pattern>
+  </servlet-mapping>
+  <resource-ref>
+    <description>Resource reference to a factory for java.sql.Connection
+			instances that may be used for talking to a particular
+			database that
+			is configured in the server.xml file.</description>
+    <res-ref-name>jdbc/TestDB</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+  <resource-ref>
+    <description>Resource reference to a factory for java.sql.Connection
+			instances that may be used for talking to a particular
+			database that
+			is configured in the server.xml file.</description>
+    <res-ref-name>jdbc/slaveDB</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+  <resource-ref>
+    <description>Resource reference to a factory for java.sql.Connection
+			instances that may be used for talking to a particular
+			database that
+			is configured in the server.xml file.</description>
+    <res-ref-name>jdbc/masterDB</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
 </web-app>

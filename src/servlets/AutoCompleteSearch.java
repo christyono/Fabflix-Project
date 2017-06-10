@@ -8,9 +8,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
+
 import helper.*;
 import java.util.*;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import com.google.gson.*;
 /**
  * Servlet implementation class AutoCompleteSearch
@@ -45,6 +48,20 @@ public class AutoCompleteSearch extends HttpServlet {
 //		response.setContentType("application/json");
 //	    response.getWriter().write(json);
 		Connection c = new Connection();
+		boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
+		boolean usePrepared = (boolean) getServletContext().getAttribute("usePreparedStatement");
+		DataSource ds = null;
+		DataSource ds2 = null;
+		if (testScaled){
+			// If doing reads, choose one datasource (master or slave) at random and send that to connection
+			ds = (DataSource) getServletContext().getAttribute("masterDB");
+			ds2 = (DataSource) getServletContext().getAttribute("slaveDB");
+		}
+		else{
+			
+			ds = (DataSource)getServletContext().getAttribute("DBCPool");
+		}
+		c.setDataSource(ds, ds2);
 		try{
 			c.connect();
 			ArrayList<String> titles = new ArrayList<String>();
@@ -61,17 +78,29 @@ public class AutoCompleteSearch extends HttpServlet {
 				}
 				System.out.println("what we're inserting: " + keywords);
 				String sqlQuery = String.format("SELECT title FROM movies WHERE MATCH (title) AGAINST ('%s' IN BOOLEAN MODE);", keywords);
-				
-				c.startQuery(sqlQuery);
-				
-				while (c.getResultSet().next()){
-				//	System.out.println("title: " + c.getResultSet().getString(1));
-					titles.add(c.getResultSet().getString(1));
+				ResultSet rs = null;
+				PreparedStatement prepStatement = null;
+				if (usePrepared){
+					prepStatement = c.getConnection().prepareStatement(sqlQuery);
+					rs = prepStatement.executeQuery(sqlQuery);
+					
 				}
+				else{
+					c.startQuery(sqlQuery);
+					rs = c.getResultSet();
+				}
+			
+				
+				
+				while (rs.next()){
+					System.out.println("title: " + rs.getString(1));
+					titles.add(rs.getString(1));
+					
+				}
+				
 				if (titles.size() != 0){
 					Gson gsonObject= new Gson();
 					String json = gsonObject.toJson(titles);
-					response.getWriter().println(json);
 					response.setContentType("application/json");
 					response.setCharacterEncoding("UTF-8");
 				    response.getWriter().write(json);

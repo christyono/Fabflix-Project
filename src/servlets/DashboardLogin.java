@@ -2,6 +2,8 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
@@ -11,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
 import helper.Connection;
 import helper.ShoppingCart;
@@ -33,14 +36,34 @@ public class DashboardLogin extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");  
 		
 		String email = request.getParameter("Email");
 		String password = request.getParameter("Password");
+		
+		// ESTABLISHES CONNECTION WITH PROPER DATASOURCE
+		
 		Connection c = new Connection();
+		boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
+		boolean isPrepared = (boolean) getServletContext().getAttribute("usePrepared");
+		DataSource ds = null;
+		DataSource ds2 = null;
+		if (testScaled){
+			// If doing reads, choose one datasource (master or slave) at random and send that to connection
+			ds = (DataSource) getServletContext().getAttribute("masterDB");
+			ds2 = (DataSource) getServletContext().getAttribute("slaveDB");
+		}
+		else{
+			
+			ds = (DataSource)getServletContext().getAttribute("DBCPool");
+		}
+		c.setDataSource(ds, ds2);
+
+		PreparedStatement pStatement = null;
+		ResultSet rs = null;
 		try {
 			c.connect();
 		} catch (Exception e) {
@@ -48,20 +71,34 @@ public class DashboardLogin extends HttpServlet {
 		}
 		String emailID = "", passwordID = "";
 		try {
-			c.startQuery(c.makeSearchQuery("password", "employees", "employees.email = '"+email+"'"));
-			while (c.getResultSet().next())
+			if (isPrepared){
+				pStatement = c.getConnection().prepareStatement(c.makeSearchQuery("password", "employees", "employees.email = '"+email+"'"));
+				rs = pStatement.executeQuery();
+			}
+			else{
+				c.startQuery(c.makeSearchQuery("password", "employees", "employees.email = '"+email+"'"));
+				rs = c.getResultSet();
+			}
+			while (rs.next())
 			{
-				passwordID = c.getResultSet().getString(1);
+				passwordID = rs.getString(1);
 			}
 		} catch (SQLException e) {
 			System.out.println("Invalid Query");
 		}
 		
 		try {
-			c.startQuery(c.makeSearchQuery("email", "employees", "employees.password = '"+password+"'"));
-			while (c.getResultSet().next())
+			if (isPrepared){
+				pStatement = c.getConnection().prepareStatement(c.makeSearchQuery("email", "employees", "employees.password = '"+password+"'"));
+				rs = pStatement.executeQuery();
+			}
+			else{
+				c.startQuery(c.makeSearchQuery("email", "employees", "employees.password = '"+password+"'"));
+				rs = c.getResultSet();
+			}
+			while (rs.next())
 			{
-				emailID = c.getResultSet().getString(1);
+				emailID = rs.getString(1);
 			}
 		} catch (SQLException e) {
 			System.out.println("Invalid Query");
@@ -74,8 +111,8 @@ public class DashboardLogin extends HttpServlet {
 			
 			//Do we need this?????
 			session.setAttribute("email", email);
-			RequestDispatcher rs = request.getRequestDispatcher("/Dashboard.jsp");
-			rs.forward(request, response);
+			RequestDispatcher rd = request.getRequestDispatcher("/Dashboard.jsp");
+			rd.forward(request, response);
 			
 			
 			//  call the main.html file
@@ -85,8 +122,8 @@ public class DashboardLogin extends HttpServlet {
 		{
 			out.println("<br>Sorry, email or password is wrong<br>");
 			
-			RequestDispatcher rs = request.getRequestDispatcher("/_dashboard.html");
-			rs.include(request, response);
+			RequestDispatcher rd = request.getRequestDispatcher("/_dashboard.html");
+			rd.include(request, response);
 		}
 		out.close();
 		try
@@ -102,7 +139,6 @@ public class DashboardLogin extends HttpServlet {
 		
 		
 	}
-
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */

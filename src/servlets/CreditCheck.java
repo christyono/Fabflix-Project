@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 
 import java.sql.SQLException;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
 import helper.*;
 import java.util.*;
@@ -56,7 +59,7 @@ public class CreditCheck extends HttpServlet {
     	
     	return query;
     }
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		response.setContentType("text/html"); 
 		PrintWriter out = response.getWriter();
@@ -107,6 +110,20 @@ public class CreditCheck extends HttpServlet {
 		String query = makeCreditQuery(searchParams.get("firstName"), searchParams.get("lastName"),searchParams.get("cardNum"), expirationDate);
 		//out.println(query);
 		Connection c = new Connection();
+		boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
+		boolean isPrepared = (boolean) getServletContext().getAttribute("usePrepared");
+		DataSource ds = null;
+		DataSource ds2 = null;
+		if (testScaled){
+			// If doing reads, choose one datasource (master or slave) at random and send that to connection
+			ds = (DataSource) getServletContext().getAttribute("masterDB");
+			ds2 = (DataSource) getServletContext().getAttribute("slaveDB");
+		}
+		else{
+			
+			ds = (DataSource)getServletContext().getAttribute("DBCPool");
+		}
+		c.setDataSource(ds, ds2);
 		try
 		{
 			c.connect();
@@ -117,31 +134,58 @@ public class CreditCheck extends HttpServlet {
 		}
 		try
 		{
-			c.startQuery(query);
-			if (!c.getResultSet().isBeforeFirst())
+			ResultSet rs = null;
+			PreparedStatement pStatement = null;
+			if (isPrepared){
+				pStatement = c.getConnection().prepareStatement(query);
+				rs = pStatement.executeQuery();
+			}
+			else{
+				c.startQuery(query);
+				rs = c.getResultSet();
+			}
+			if (!rs.isBeforeFirst())
 			{
 				out.println("<br> Please enter a valid data <br>");
-				RequestDispatcher rs = request.getRequestDispatcher("/Checkout.jsp");
-				rs.include(request, response);
+				RequestDispatcher rd = request.getRequestDispatcher("/Checkout.jsp");
+				rd.include(request, response);
 				return;
 			}
 			// CHECK TO SEE IF USER ENTERED ALL INFO PROPERLY 
 			
 			String query1 = findCustomerQuery(searchParams.get("cardNum"));
 			out.print(query1);
-			c.startQuery(query1);
-			if (!c.getResultSet().isBeforeFirst())
+			if (isPrepared){
+				pStatement = c.getConnection().prepareStatement(query1);
+				rs = pStatement.executeQuery();
+			}
+			else{
+				c.startQuery(query1);
+				rs = c.getResultSet();
+			}
+			if (!rs.isBeforeFirst())
 			{
 				out.println("<br> No credit card information for customer with this creditcard number <br>");
-				RequestDispatcher rs = request.getRequestDispatcher("/Checkout.jsp");
-				rs.include(request, response);
+				RequestDispatcher rd = request.getRequestDispatcher("/Checkout.jsp");
+				rd.include(request, response);
 			}
 			else
 			{
-				int customerID = 0;
-				while (c.getResultSet().next())
+				if (testScaled)
 				{
-					customerID = c.getResultSet().getInt(1);
+					c.closeConnection();
+					try{
+						c.setDataSource(ds, null);
+						c.connect();
+					}
+					catch (Exception e){
+						System.out.println("Failed to connect to master data source");
+					}
+				}
+				int customerID = 0;
+				while (rs.next())
+				{
+					customerID = rs.getInt(1);
 				}
 				
 				HttpSession session = request.getSession();
@@ -157,13 +201,19 @@ public class CreditCheck extends HttpServlet {
 							
 							String query2 = makeInsertTransaction(customerID, Cart.getID(i), date.toString());
 							out.println("<br>" + query2 + "<br>");
-							c.executeUpdate(query2);
+							if (isPrepared){
+								pStatement = c.getConnection().prepareStatement(query2);
+								pStatement.executeUpdate();
+							}
+							else{
+								c.executeUpdate(query2);
+							}
 						}
 					}
 				}
 				//request.setParameter("success", "true");
-				RequestDispatcher rs = request.getRequestDispatcher("/Confirmation.jsp?success=true");
-				rs.forward(request, response);
+				RequestDispatcher rd = request.getRequestDispatcher("/Confirmation.jsp?success=true");
+				rd.forward(request, response);
 				
 				
 			}

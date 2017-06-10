@@ -3,6 +3,8 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -13,7 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
+import javax.sql.DataSource;
 
 import java.util.*;
 
@@ -131,8 +133,11 @@ public class FindMovie extends HttpServlet {
     	return query;
     }
     
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		
+		ResultSet r = null;
+		PreparedStatement prepStatement = null;
 		
 		response.setContentType("text/html"); 
 		ArrayList<Movie> movieList = new ArrayList<Movie>();
@@ -140,8 +145,20 @@ public class FindMovie extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		
 		Connection c = new Connection();
-		
-		boolean allNull = true;
+		boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
+		boolean usePrep = (boolean) getServletContext().getAttribute("usePrepared");
+		DataSource ds = null;
+		DataSource ds2 = null;
+		if (testScaled){
+			// If doing reads, choose one datasource (master or slave) at random and send that to connection
+			ds = (DataSource) getServletContext().getAttribute("masterDB");
+			ds2 = (DataSource) getServletContext().getAttribute("slaveDB");
+		}
+		else{
+			
+			ds = (DataSource)getServletContext().getAttribute("DBCPool");
+		}
+		c.setDataSource(ds, ds2);
 		String [] urlParams = {"title", "year", "director", "first_name", "last_name"};
 		HashMap <String, String> searchParams = new HashMap<String, String>();
 		
@@ -151,26 +168,7 @@ public class FindMovie extends HttpServlet {
 		{
 			searchParams.put(urlParams[i], request.getParameter(urlParams[i]));
 		}
-		
-//		for (int i = 0; i < searchParams.values().size(); i++)
-//		{
-//			
-//			if (searchParams.get(i) != null)
-//			{
-//				allNull = false;
-//				break;
-//			}
-//		}
-//		if (allNull == true)
-//		{
-//			
-//			out.println("<br><u> Please enter a keyword in at least one of the fields below </u><br>");
-//			RequestDispatcher rs = request.getRequestDispatcher("/DisplaySearch.jsp");
-//			rs.include(request, response);
-//		}
-		
-		
-		
+			
 		try
 		{
 			c.connect();
@@ -199,19 +197,31 @@ public class FindMovie extends HttpServlet {
 			// LIKE "%%" for that particular field, so that it doesn't match anything
 
 			//out.println(query);
-			c.startQuery(query);
+			
+			
+			if(usePrep){
+			prepStatement = c.getConnection().prepareStatement(query);
+			r = prepStatement.executeQuery();
+			}
+			else{
+				c.startQuery(query);
+				r = c.getResultSet();
+			}
+			
 			Movie newMovie = null;
 			int counter = 0;
 			
-			while (c.getResultSet().next())
+//			while (c.getResultSet().next())
+			while(r.next())
 			{
 				// add all attributes to movie 
-				int movieID = c.getResultSet().getInt(1);
-				String title = c.getResultSet().getString(2);
-				int year = c.getResultSet().getInt(3);
-				String director = c.getResultSet().getString(4);
-				String bannerURL = c.getResultSet().getString(5);
-				String trailerURL = c.getResultSet().getString(6);
+				int movieID = r.getInt(1);
+				String title = r.getString(2);
+				int year = r.getInt(3);
+				String director = r.getString(4);
+				String bannerURL = r.getString(5);
+				String trailerURL = r.getString(6);
+				
 				if (!movieList.isEmpty())
 				{
 					if (movieID != movieList.get(counter - 1).getID())
@@ -224,7 +234,6 @@ public class FindMovie extends HttpServlet {
 						movieList.add(newMovie);
 						counter++;
 					}
-					
 					
 					
 				}
@@ -240,6 +249,7 @@ public class FindMovie extends HttpServlet {
 
 			}
 			
+			
 			for (int i = 0; i < movieList.size(); i++)
 			{
 				// make query given ID
@@ -247,25 +257,46 @@ public class FindMovie extends HttpServlet {
 				String genreQuery = makeGenreQuery(movieList.get(i).getID());
 				
 				//out.println(starQuery);
-				c.startQuery(starQuery);
-				while (c.getResultSet().next())
+				if(usePrep){
+				prepStatement = c.getConnection().prepareStatement(starQuery);
+				r = prepStatement.executeQuery();
+				}
+				else{
+
+					c.startQuery(starQuery);
+					r = c.getResultSet();
+				}
+				
+				
+				while(r.next())
 				{
 					// for each movie, given its movie ID, get the stars
-					int starID = c.getResultSet().getInt(1);
-					String firstName = c.getResultSet().getString(2);
-					String lastName = c.getResultSet().getString(3);
-					Date dateOfBirth = c.getResultSet().getDate(4);
-					String photoURL = c.getResultSet().getString(5);
+					int starID = r.getInt(1);
+					String firstName = r.getString(2);
+					String lastName = r.getString(3);
+					Date dateOfBirth = r.getDate(4);
+					String photoURL = r.getString(5);
 					movieList.get(i).addStar(starID, firstName, lastName, dateOfBirth, photoURL);
 				}
-				//out.println(genreQuery);
-				c.startQuery(genreQuery);
 				
-				while (c.getResultSet().next())
+				
+				//out.println(genreQuery);
+				
+				if(usePrep){
+				prepStatement = c.getConnection().prepareStatement(genreQuery);
+				r = prepStatement.executeQuery();
+				}
+				else{
+
+					c.startQuery(genreQuery);
+					r = c.getResultSet();
+				}
+				
+				while (r.next())
 				{
 					// for each movie, given its movie ID, get the 
-					String genre = c.getResultSet().getString(1);
-					int genreID = c.getResultSet().getInt(2);
+					String genre = r.getString(1);
+					int genreID = r.getInt(2);
 					movieList.get(i).addGenre(genreID, genre);
 				}
 			}
@@ -278,17 +309,28 @@ public class FindMovie extends HttpServlet {
 				{
 					int starID = movieList.get(i).getStarList().get(j).getStarID();
 					String starredQuery = makeStarredQuery(starID);
-					c.startQuery(starredQuery);
-					while (c.getResultSet().next())
+					
+					if(usePrep){
+						prepStatement = c.getConnection().prepareStatement(starredQuery);
+						r = prepStatement.executeQuery();
+						}
+						else{
+
+							c.startQuery(starredQuery);
+							r = c.getResultSet();
+						}
+					
+					
+					while (r.next())
 					{
 						// add list of movies in which the star has starred in 
 						
-						int movieID = c.getResultSet().getInt(1);
-						String title = c.getResultSet().getString(2);
-						int year = c.getResultSet().getInt(3);
-						String director = c.getResultSet().getString(4);
-						String bannerURL = c.getResultSet().getString(5);
-						String trailerURL = c.getResultSet().getString(6);
+						int movieID = r.getInt(1);
+						String title = r.getString(2);
+						int year = r.getInt(3);
+						String director = r.getString(4);
+						String bannerURL = r.getString(5);
+						String trailerURL = r.getString(6);
 						movieList.get(i).getStarList().get(j).addStarredMovie(movieID, title, year, director, bannerURL, trailerURL);
 						
 					}
@@ -334,7 +376,6 @@ public class FindMovie extends HttpServlet {
 		
 		
 	}
-
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */

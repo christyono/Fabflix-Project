@@ -6,18 +6,19 @@ import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
+//import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
 import helper.Connection;
 
 /**
  * Servlet implementation class AddMovie
  */
-@WebServlet("/AddMovie")
+//@WebServlet("/AddMovie")
 public class AddMovie extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -39,7 +40,19 @@ response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		
 		Connection c = new Connection();
-		
+		boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
+		DataSource ds = null;
+		DataSource ds2 = null;
+		if (testScaled){
+			// If doing reads, choose one datasource (master or slave) at random and send that to connection
+			// if doing a write, send only master
+			ds = (DataSource) getServletContext().getAttribute("masterDB");
+		}
+		else{
+			
+			ds = (DataSource)getServletContext().getAttribute("DBCPool");
+		}
+		c.setDataSource(ds, ds2);
 		   String lastName = "";
 		   String firstName = "";
 

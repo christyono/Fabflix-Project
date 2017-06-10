@@ -7,8 +7,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 import javax.servlet.RequestDispatcher;
 import java.io.PrintWriter;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import java.util.*;
@@ -42,6 +45,10 @@ public class GetGenre extends HttpServlet {
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 		response.setContentType("text/html"); 
 		Connection c = new Connection();
+		boolean usePrepared = (boolean) getServletContext().getAttribute("usePrepared");
+		PreparedStatement prepStatement = null;
+		ResultSet rs = null;
+		c.setDataSource((DataSource)getServletContext().getAttribute("DBCPool"));
 		PrintWriter out = response.getWriter();
 		ArrayList<String> genreNameList = new ArrayList<String>();
 		try
@@ -54,17 +61,25 @@ public class GetGenre extends HttpServlet {
 		}
 		try{
 			String query = makeGenreQuery();
-			
-			c.startQuery(query);
-			while (c.getResultSet().next()){
-				String genreName = c.getResultSet().getString(1);
+			if (usePrepared){
+				System.out.println("Using PreparedStatements");
+				prepStatement = c.getConnection().prepareStatement(query);
+				rs = prepStatement.executeQuery();
+				
+			}
+			else{
+				c.startQuery(query);
+				rs = c.getResultSet();
+			}
+			while (rs.next()){
+				String genreName = rs.getString(1);
 				genreNameList.add(genreName);
 			}
 			
 			HttpSession s = request.getSession();
 			s.setAttribute("genreNameList", genreNameList);
-			RequestDispatcher rs = request.getRequestDispatcher("/Browse.jsp");
-			rs.forward(request, response);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/Browse.jsp");
+			dispatcher.forward(request, response);
 		}
 		catch (SQLException e)
 		{

@@ -3,6 +3,8 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 import javax.xml.ws.Response;
 
 import helper.*;
@@ -68,7 +71,26 @@ public class GetMovie extends HttpServlet {
     }
     public Movie getMovieFromStar(int movieID) throws SQLException
     {
+    	
+    	
     	Connection c = new Connection();
+		ResultSet r = null;
+		PreparedStatement prepStatement = null;
+		boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
+    	boolean usePrep = (boolean) getServletContext().getAttribute("usePrepared");
+		DataSource ds = null;
+		DataSource ds2 = null;
+		if (testScaled){
+			// If doing reads, choose one datasource (master or slave) at random and send that to connection
+			ds = (DataSource) getServletContext().getAttribute("masterDB");
+			ds2 = (DataSource) getServletContext().getAttribute("slaveDB");
+		}
+		else{
+			
+			ds = (DataSource)getServletContext().getAttribute("DBCPool");
+		}
+		c.setDataSource(ds, ds2);	
+    	
     	try{
     		
     		c.connect();
@@ -78,7 +100,16 @@ public class GetMovie extends HttpServlet {
     		System.out.println("Failed to connect, username or password wrong");
     	}
     	try{
-    		c.startQuery(findMovieGivenID(movieID));
+    		
+			if(usePrep){
+			prepStatement = c.getConnection().prepareStatement(findMovieGivenID(movieID));
+			r = prepStatement.executeQuery();
+			}
+			else{
+				c.startQuery(findMovieGivenID(movieID));
+				r = c.getResultSet();
+			}
+    		
     		// Get the movie based on starID and movieID
     		Movie movie = new Movie();
     		int movID;
@@ -87,13 +118,13 @@ public class GetMovie extends HttpServlet {
     		String director;
     		String bannerURL;
     		String trailerURL;
-    		while (c.getResultSet().next()){
-    			movID = c.getResultSet().getInt(1);
-    			title = c.getResultSet().getString(2);
-    			year = c.getResultSet().getInt(3);
-    			director = c.getResultSet().getString(4);
-    			bannerURL = c.getResultSet().getString(5);
-    			trailerURL = c.getResultSet().getString(6);
+    		while (r.next()){
+    			movID = r.getInt(1);
+    			title = r.getString(2);
+    			year = r.getInt(3);
+    			director = r.getString(4);
+    			bannerURL = r.getString(5);
+    			trailerURL = r.getString(6);
     			movie.setID(movID);
     			movie.setTitle(title);
     			movie.setYear(year);
@@ -105,26 +136,47 @@ public class GetMovie extends HttpServlet {
     		}
     		
 			
+			if(usePrep){
+			prepStatement = c.getConnection().prepareStatement(makeStarQuery(movieID));
+			r = prepStatement.executeQuery();
+			}
+			else{
+				c.startQuery(makeStarQuery(movieID));
+				r = c.getResultSet();
+			}
+    		
+    		
 			
 			c.startQuery(makeStarQuery(movieID));
-			while (c.getResultSet().next())
+			while (r.next())
 			{
 				// for each movie, given its movie ID, get the stars
-				int star = c.getResultSet().getInt(1);
-				String firstName = c.getResultSet().getString(2);
-				String lastName = c.getResultSet().getString(3);
-				Date dateOfBirth = c.getResultSet().getDate(4);
-				String photoURL = c.getResultSet().getString(5);
+				int star = r.getInt(1);
+				String firstName = r.getString(2);
+				String lastName = r.getString(3);
+				Date dateOfBirth = r.getDate(4);
+				String photoURL = r.getString(5);
 				movie.addStar(star, firstName, lastName, dateOfBirth, photoURL);
 			}
 			//out.println(genreQuery);
-			c.startQuery(makeGenreQuery(movieID));
 			
-			while (c.getResultSet().next())
+			
+			if(usePrep){
+			prepStatement = c.getConnection().prepareStatement(makeGenreQuery(movieID));
+			r = prepStatement.executeQuery();
+			}
+			else{
+				c.startQuery(makeGenreQuery(movieID));
+				r = c.getResultSet();
+			}
+			
+			
+			
+			while (r.next())
 			{
 				// for each movie, given its movie ID, get the 
-				String genre = c.getResultSet().getString(1);
-				int genreID = c.getResultSet().getInt(2);
+				String genre = r.getString(1);
+				int genreID = r.getInt(2);
 				movie.addGenre(genreID, genre);
 			}
 			c.closeConnection();
@@ -161,6 +213,7 @@ public class GetMovie extends HttpServlet {
 			rs.include(request, response);
 			return;
 		}
+		@SuppressWarnings("unchecked")
 		ArrayList<Movie> movieList = (ArrayList<Movie>)session.getAttribute("movieList");
 		Movie desiredMovie = null;
 		// first block: user clicks on a hyperlinked movie from the display search page

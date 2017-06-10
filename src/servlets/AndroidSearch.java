@@ -33,14 +33,12 @@ public class AndroidSearch extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
 		Connection c = new Connection();
 		try{
 			c.connect();
 			ArrayList<String> titles = new ArrayList<String>();
 			System.out.println(request.getParameter("query"));
 			String query = request.getParameter("query");
-			response.setHeader("cache-control", "no-cache");
 			if (!query.equals("")){
 				String tokens[] = query.split(" ");
 				String keywords = "";
@@ -61,12 +59,12 @@ public class AndroidSearch extends HttpServlet {
 				if (titles.size() != 0){
 					Gson gsonObject= new Gson();
 					String json = gsonObject.toJson(titles);
-					response.getWriter().println(json);
 					response.setContentType("application/json");
 					response.setCharacterEncoding("UTF-8");
 				    response.getWriter().write(json);
-					
 				}
+					
+					
 			}
 			else{
 				System.out.println("No search query input");

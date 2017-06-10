@@ -3,6 +3,8 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
 import helper.*;
 
@@ -56,6 +59,21 @@ public class GetStar extends HttpServlet {
     public Star getStarMethod(int starID) throws SQLException
     {
     	Connection c= new Connection();
+    	boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
+    	boolean usePrep = (boolean) getServletContext().getAttribute("usePrepared");
+		DataSource ds = null;
+		DataSource ds2 = null;
+		if (testScaled){
+			// If doing reads, choose one datasource (master or slave) at random and send that to connection
+			ds = (DataSource) getServletContext().getAttribute("masterDB");
+			ds2 = (DataSource) getServletContext().getAttribute("slaveDB");
+		}
+		else{
+			
+			ds = (DataSource)getServletContext().getAttribute("DBCPool");
+		}
+		c.setDataSource(ds, ds2);
+
     	try{
 			c.connect();
 		}
@@ -64,35 +82,58 @@ public class GetStar extends HttpServlet {
 			System.out.println("Failed to connect");
 		}
 		try{
-			String starQuery = getStarGivenID(starID);
-			c.startQuery(starQuery);
+			
+			
+			ResultSet r = null;
+			PreparedStatement prepStatement = null;
+
+			if(usePrep){
+			prepStatement = c.getConnection().prepareStatement(getStarGivenID(starID));
+			r = prepStatement.executeQuery();
+			}
+			else{
+				c.startQuery(getStarGivenID(starID));
+				r = c.getResultSet();
+			}
+			
 			int ID;
 			String firstName;
 			String lastName;
 			Date dateOfBirth;
 			String photoURL;
 			Star star = new Star();
-			while (c.getResultSet().next())
+			while (r.next())
 			{
-				ID = c.getResultSet().getInt(1);
-				firstName = c.getResultSet().getString(2);
-				lastName = c.getResultSet().getString(3);
-				dateOfBirth = c.getResultSet().getDate(4);
-				photoURL = c.getResultSet().getString(5);
+				ID = r.getInt(1);
+				firstName = r.getString(2);
+				lastName = r.getString(3);
+				dateOfBirth = r.getDate(4);
+				photoURL = r.getString(5);
 				star = new Star(ID, firstName, lastName, dateOfBirth, photoURL);
 				
 			}
 			
-			c.startQuery(makeStarredQuery(starID));
 			
-			while (c.getResultSet().next())
+			if(usePrep){
+			prepStatement = c.getConnection().prepareStatement(makeStarredQuery(starID));
+			r = prepStatement.executeQuery();
+			}
+			else{
+				c.startQuery(makeStarredQuery(starID));
+				r = c.getResultSet();
+			}
+			
+			
+			
+			
+			while (r.next())
 			{
-				int movieID = c.getResultSet().getInt(1);
-				String title = c.getResultSet().getString(2);
-				int year = c.getResultSet().getInt(3);
-				String director = c.getResultSet().getString(4);
-				String bannerURL = c.getResultSet().getString(5);
-				String trailerURL = c.getResultSet().getString(6);
+				int movieID = r.getInt(1);
+				String title = r.getString(2);
+				int year = r.getInt(3);
+				String director = r.getString(4);
+				String bannerURL = r.getString(5);
+				String trailerURL = r.getString(6);
 				
 				star.addStarredMovie(movieID, title, year, director, bannerURL, trailerURL);
 			}
@@ -106,6 +147,7 @@ public class GetStar extends HttpServlet {
 		}
 
     }
+    
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
@@ -127,6 +169,7 @@ public class GetStar extends HttpServlet {
 			rs.include(request, response);
 			return;
 		}
+		@SuppressWarnings("unchecked")
 		ArrayList<Movie> movieList = (ArrayList<Movie>)session.getAttribute("movieList");
 		out.println("<br> STARID: " + starID + "<br>");
 		for (int i = 0; i < movieList.size(); i++)

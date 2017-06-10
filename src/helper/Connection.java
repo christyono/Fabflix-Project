@@ -1,6 +1,15 @@
 package helper;
 import java.sql.*;   
 import java.util.ArrayList;
+import java.util.Random;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.naming.Context;
+import javax.sql.DataSource;
+import javax.servlet.ServletException;
 
 public class Connection {
 	private String username = "root";
@@ -10,26 +19,73 @@ public class Connection {
 	private int retID;
 	private java.sql.Connection connection;
 	private CallableStatement proc;
-	
+	private boolean useConnectionPool = false;
+	private DataSource ds;
 	public Connection()
 	{
+		
 		result = null;
 		connection = null;
 		select = null;
+		ds = null;
 		
+	}
+	public void setDataSource(DataSource ds, DataSource ds2){
+		// Pass in 2 datasources, but only choose 1
+		// LOCAL: pass in DBCPool
+		// READ for MASTER/SLAVE: pass in master and slave but pick one to connect to
+		// WRITE for MASTER/SLAVE: pass in master and connect to master only
+		if (ds2 != null)
+		{
+			Random r = new Random();
+			int value = r.nextInt(2);
+			
+			// pick a number 0 or 1
+			// if 0, use master
+			// else use slave
+			if (value == 0)
+			{
+				this.ds = ds;
+			}
+			else
+			{
+				this.ds = ds2;
+			}
+		}
+		else
+		{
+			this.ds = ds;
+		}
+//		if (this.ds == null){
+//			System.out.println("didn't set properly");
+//		}
 	}
 	public void connect() throws Exception
 	{
-		Class.forName("com.mysql.jdbc.Driver").newInstance(); 
-		try
-        {
- 		   connection = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false", username, password);
-        }
- 	   catch (Exception e)
- 	   {
- 		   e.printStackTrace();
-     	   System.out.println("Database or Password is wrong");
- 	   }
+		
+		if (useConnectionPool)
+		{
+			System.out.println("In connectionPool == true");
+			if (ds == null){
+				
+				System.out.println("Test to see if ds is null");
+			}
+			connection = ds.getConnection();
+			System.out.println("Initialized via Connection Pool");
+		}
+		else
+		{
+			Class.forName("com.mysql.jdbc.Driver").newInstance(); 
+			try
+		    {
+			   connection = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false", username, password);
+		    }
+		    catch (Exception e)
+		    {
+			   e.printStackTrace();
+		 	   System.out.println("Database or Password is wrong");
+		    }
+		}
 	}
 	public String makeSearchQuery(String select, String from, String where)
 	{

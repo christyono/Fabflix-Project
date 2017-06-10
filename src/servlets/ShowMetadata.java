@@ -6,13 +6,15 @@ import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
+//import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
-import com.mysql.jdbc.ResultSet;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import helper.Connection;
 
@@ -39,8 +41,28 @@ public class ShowMetadata extends HttpServlet {
 		response.setContentType("text/html"); 
 		PrintWriter out = response.getWriter();
 		response.getWriter().append("Served at: ").append(request.getContextPath());
+
+
 		Connection c = new Connection();
+		boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
+		boolean usePrepared = (boolean) getServletContext().getAttribute("usePrepared");
+		DataSource ds = null;
+		DataSource ds2 = null;
+		if (testScaled){
+			// If doing reads, choose one datasource (master or slave) at random and send that to connection
+			ds = (DataSource) getServletContext().getAttribute("masterDB");
+			ds2 = (DataSource) getServletContext().getAttribute("slaveDB");
+		}
+		else{
+			
+			ds = (DataSource)getServletContext().getAttribute("DBCPool");
+		}
+		c.setDataSource(ds, ds2);
+		ResultSet rs = null;
+		PreparedStatement prepStatement = null;
+
 		String output = "";
+
 		try
 		{
 			c.connect();
@@ -52,24 +74,35 @@ public class ShowMetadata extends HttpServlet {
 		try
 		{
 			HttpSession session = request.getSession(false);
+			String searchQuery = "select table_name from information_schema.tables where table_schema = 'moviedb'";
 			if (session == null)
 			{
 				out.println("<br>Please login first<br>");
-				RequestDispatcher rs = request.getRequestDispatcher("/index.html");
-				rs.include(request, response);
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/index.html");
+				dispatcher.include(request, response);
 				return;
 			}
-            c.startQuery("select table_name from information_schema.tables where table_schema = 'moviedb'");
-            ResultSet result = (ResultSet) c.getResultSet();
+			if (usePrepared)
+			{
+				System.out.println("Using preparedStatement");
+				prepStatement = c.getConnection().prepareStatement(searchQuery);
+				rs = prepStatement.executeQuery();	
+			}
+			else
+			{
+				
+				c.startQuery(searchQuery);
+				rs = c.getResultSet();
+			}
              //loops until all table names are printed
-            while(result.next())
+            while(rs.next())
             {
 
             	output += "<br>";
-            	output += ("Table name: " + result.getString(1) + "<br>");
+            	output += ("Table name: " + rs.getString(1) + "<br>");
           	   
           	   //print table data
-            	c.startQuery("describe " + result.getString(1));
+            	c.startQuery("describe " + rs.getString(1));
             	output += "Fields :<br>";
             	ResultSet tableData = (ResultSet) c.getResultSet();
             	while(tableData.next())
@@ -78,8 +111,8 @@ public class ShowMetadata extends HttpServlet {
             	}
            }
             session.setAttribute("output", output);
-			RequestDispatcher rs = request.getRequestDispatcher("/DisplayMetadata.jsp");
-			rs.forward(request, response);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/DisplayMetadata.jsp");
+			dispatcher.forward(request, response);
 			c.closeConnection();
   	   }
   	   catch(SQLException e)

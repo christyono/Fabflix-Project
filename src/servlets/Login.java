@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import javax.sql.DataSource;
 import helper.*;
 
 /**
@@ -58,6 +60,33 @@ public class Login extends HttpServlet {
 		String name = request.getParameter("Username");
 		String password = request.getParameter("Password");
 		Connection c = new Connection();
+		boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
+		boolean usePrepared = (boolean) getServletContext().getAttribute("usePrepared");
+		DataSource ds = null;
+		DataSource ds2 = null;
+		if (testScaled){
+			// If doing reads, choose one datasource (master or slave) at random and send that to connection
+			ds = (DataSource) getServletContext().getAttribute("masterDB");
+			ds2 = (DataSource) getServletContext().getAttribute("slaveDB");
+		}
+		else{
+			
+			ds = (DataSource)getServletContext().getAttribute("DBCPool");
+		}
+		c.setDataSource(ds, ds2);
+		ResultSet rs = null;
+		PreparedStatement prepStatement = null;
+		// SET usePrepared flag == true to use preparedStatements instead of regular statements
+
+
+		if (ds == null){
+			System.out.println("In login.java: ds is null");
+		}
+		else{
+			
+			c.setDataSource(ds, ds2);
+		}
+		
 		try {
 			c.connect();
 		} catch (Exception e) {
@@ -65,21 +94,38 @@ public class Login extends HttpServlet {
 		}
 		String nameID = "", passwordID = "";
 		try {
-			System.out.println("Testing");
-			c.startQuery(c.makeSearchQuery("customers.id", "customers", "customers.email = '"+name+"'"));
-			while (c.getResultSet().next())
+			//System.out.println("Testing");
+			String searchQuery = c.makeSearchQuery("customers.id", "customers", "customers.email = '"+name+"'");
+			if (usePrepared){
+				System.out.println("Using preparedStatement");
+				prepStatement = c.getConnection().prepareStatement(searchQuery);
+				rs = prepStatement.executeQuery();
+			}
+			else{
+				c.startQuery(searchQuery);
+				rs = c.getResultSet();
+			}
+			while (rs.next())
 			{
-				nameID = c.getResultSet().getString(1);
+				nameID = rs.getString(1);
 			}
 		} catch (SQLException e) {
 			System.out.println("Invalid Query");
 		}
 		
 		try {
-			c.startQuery(c.makeSearchQuery("customers.id", "customers", "customers.password = '"+password+"'"));
-			while (c.getResultSet().next())
+			String searchQuery2 = c.makeSearchQuery("customers.id", "customers", "customers.password = '"+password+"'");
+			if (usePrepared){
+				prepStatement = c.getConnection().prepareStatement(searchQuery2);
+				rs = prepStatement.executeQuery();
+			}
+			else{
+				c.startQuery(searchQuery2);
+				rs = c.getResultSet();
+			}
+			while (rs.next())
 			{
-				passwordID = c.getResultSet().getString(1);
+				passwordID = rs.getString(1);
 			}
 		} catch (SQLException e) {
 			System.out.println("Invalid Query");
@@ -90,8 +136,8 @@ public class Login extends HttpServlet {
 			session.setAttribute("username", name);
 			ShoppingCart Cart = new ShoppingCart();
 			session.setAttribute("Cart", Cart);
-			RequestDispatcher rs = request.getRequestDispatcher("main.jsp");
-			rs.forward(request, response);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("main.jsp");
+			dispatcher.forward(request, response);
 			
 			
 			//  call the main.html file
@@ -100,8 +146,8 @@ public class Login extends HttpServlet {
 		else
 		{
 			request.setAttribute("Incorrect", "Sorry, username or password is wrong");
-			RequestDispatcher rs = request.getRequestDispatcher("/LoginPage.jsp");
-			rs.include(request, response);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/LoginPage.jsp");
+			dispatcher.include(request, response);
 		}
 		out.close();
 		try
