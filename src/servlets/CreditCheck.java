@@ -171,17 +171,7 @@ public class CreditCheck extends HttpServlet {
 			}
 			else
 			{
-				if (testScaled)
-				{
-					c.closeConnection();
-					try{
-						c.setDataSource(ds, null);
-						c.connect();
-					}
-					catch (Exception e){
-						System.out.println("Failed to connect to master data source");
-					}
-				}
+				
 				int customerID = 0;
 				while (rs.next())
 				{
@@ -190,6 +180,18 @@ public class CreditCheck extends HttpServlet {
 				
 				HttpSession session = request.getSession();
 				ShoppingCart Cart = (ShoppingCart)session.getAttribute("Cart");
+				if (testScaled)
+				{
+					c.closeConnection();
+					try{
+						c.setDataSource(ds, null);
+						c.connect();
+						System.out.println("In CreditCheck.java, using masterdb for write");
+					}
+					catch (Exception e){
+						System.out.println("Failed to connect to master data source");
+					}
+				}
 				for (int i = 0; i < Cart.getLength(); i++)
 				{
 					if (Cart.getItem(i).getQuantity() >= 1)
@@ -214,7 +216,7 @@ public class CreditCheck extends HttpServlet {
 				//request.setParameter("success", "true");
 				RequestDispatcher rd = request.getRequestDispatcher("/Confirmation.jsp?success=true");
 				rd.forward(request, response);
-				
+				c.closeConnection();
 				
 			}
 			

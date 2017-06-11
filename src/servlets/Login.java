@@ -68,12 +68,15 @@ public class Login extends HttpServlet {
 			// If doing reads, choose one datasource (master or slave) at random and send that to connection
 			ds = (DataSource) getServletContext().getAttribute("masterDB");
 			ds2 = (DataSource) getServletContext().getAttribute("slaveDB");
+			if (ds == null || ds2 == null)
+			{
+				System.out.println("Within Login.java, one of masterDB or slaveDB Datasource is null");
+			}
 		}
 		else{
 			
 			ds = (DataSource)getServletContext().getAttribute("DBCPool");
 		}
-		c.setDataSource(ds, ds2);
 		ResultSet rs = null;
 		PreparedStatement prepStatement = null;
 		// SET usePrepared flag == true to use preparedStatements instead of regular statements

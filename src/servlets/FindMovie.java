@@ -1,5 +1,6 @@
 package servlets;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
@@ -143,7 +144,10 @@ public class FindMovie extends HttpServlet {
 		ArrayList<Movie> movieList = new ArrayList<Movie>();
 		
 		PrintWriter out = response.getWriter();
+		// START TIMER FOR JDBC EXECUTION
 		
+		long startTime = System.nanoTime();
+
 		Connection c = new Connection();
 		boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
 		boolean usePrep = (boolean) getServletContext().getAttribute("usePrepared");
@@ -340,6 +344,24 @@ public class FindMovie extends HttpServlet {
 			}
 			
 			
+			// STOP THE TIMER FOR JDBC EXECUTION
+			long endTime = System.nanoTime();
+			long elapsedTime = endTime - startTime;	
+			
+			// WRITE EXECUTION TIME TO FILE
+			try
+			{
+				String file = "SearchTimeLog.txt";
+				PrintWriter write = new PrintWriter(new FileWriter(file, true));
+			    write.print("JDBC Execution Time: " + elapsedTime + ", ");
+			    write.close();
+				System.out.println("In FindMovie: wrote to file");
+			} 
+			catch (IOException e) 
+			{
+				
+				e.printStackTrace();
+			}
 			if (session != null && session.getAttribute("movieList") != null)
 			{
 				session.removeAttribute("movieList");

@@ -48,8 +48,24 @@ public class GetGenre extends HttpServlet {
 		boolean usePrepared = (boolean) getServletContext().getAttribute("usePrepared");
 		PreparedStatement prepStatement = null;
 		ResultSet rs = null;
-		c.setDataSource((DataSource)getServletContext().getAttribute("DBCPool"));
 		PrintWriter out = response.getWriter();
+		boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
+		DataSource ds = null;
+		DataSource ds2 = null;
+		if (testScaled){
+			// If doing reads, choose one datasource (master or slave) at random and send that to connection
+			ds = (DataSource) getServletContext().getAttribute("masterDB");
+			ds2 = (DataSource) getServletContext().getAttribute("slaveDB");
+			if (ds == null || ds2 == null)
+			{
+				System.out.println("Within Login.java, one of masterDB or slaveDB Datasource is null");
+			}
+		}
+		else{
+			
+			ds = (DataSource)getServletContext().getAttribute("DBCPool");
+		}
+		c.setDataSource(ds,  ds2);
 		ArrayList<String> genreNameList = new ArrayList<String>();
 		try
 		{

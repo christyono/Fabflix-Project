@@ -20,7 +20,7 @@ public class ConnectionPool2 implements ServletContextListener, ServletContextAt
      * Default constructor. 
      */
 	private boolean testScaledVersion = false;
-	private boolean usePreparedStatement = false;
+	private boolean usePreparedStatement = true;
     public ConnectionPool2() {
         // TODO Auto-generated constructor stub
     }

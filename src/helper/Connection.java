@@ -19,7 +19,7 @@ public class Connection {
 	private int retID;
 	private java.sql.Connection connection;
 	private CallableStatement proc;
-	private boolean useConnectionPool = false;
+	private boolean useConnectionPool = true;
 	private DataSource ds;
 	public Connection()
 	{
@@ -38,6 +38,7 @@ public class Connection {
 		if (ds2 != null)
 		{
 			Random r = new Random();
+			System.out.println("Choosing master and slave randomly within Connection.java");
 			int value = r.nextInt(2);
 			
 			// pick a number 0 or 1
