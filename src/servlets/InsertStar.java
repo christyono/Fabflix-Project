@@ -43,8 +43,11 @@ public class InsertStar extends HttpServlet {
 		
 		Connection c = new Connection();
 		boolean testScaled = (boolean) getServletContext().getAttribute("testScaledVersion");
+		boolean usePrepared = (boolean) getServletContext().getAttribute("usePrepared");
 		DataSource ds = null;
 		DataSource ds2 = null;
+		PreparedStatement preparedStatement = null;
+		int retID;
 		if (testScaled){
 			// If doing reads, choose one datasource (master or slave) at random and send that to connection
 			// We get connection from master because we are doing writes
@@ -99,11 +102,17 @@ public class InsertStar extends HttpServlet {
 					return;
 				}
 			   String sqlQuery = "insert into stars (first_name, last_name, dob, photo_url) values ('" + firstName+ "', '" + lastName+ "', '" + dateOfBirth + "', '" + URL + "');";
-			   
-				
+			   if (usePrepared){
+				   preparedStatement = c.getConnection().prepareStatement(sqlQuery);
+				   retID = preparedStatement.executeUpdate();  
+			   }
+			   else{
 				c.executeUpdate(sqlQuery);
-				System.out.println("Number of Rows Changed: " + c.getRetID());
-				if(c.getRetID()==0)
+				retID = c.getRetID();
+				   
+			   }
+				System.out.println("Number of Rows Changed: " + retID);
+				if(retID==0)
 				{
 					out.println("<br>Failed to execute Query<br>");
 
