@@ -145,7 +145,7 @@ public class FindMovie extends HttpServlet {
 		
 		PrintWriter out = response.getWriter();
 		// START TIMER FOR JDBC EXECUTION
-		
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 		long startTime = System.nanoTime();
 
 		Connection c = new Connection();
@@ -343,18 +343,23 @@ public class FindMovie extends HttpServlet {
 				
 			}
 			
-			
+	
+
 			// STOP THE TIMER FOR JDBC EXECUTION
 			long endTime = System.nanoTime();
 			long elapsedTime = endTime - startTime;	
 			
 			// WRITE EXECUTION TIME TO FILE
+				System.out.print("JDBC Execution Time: " + elapsedTime + ", ");
+				//System.out.println("In FindMovie: wrote to file");
 			try
 			{
 				String file = "SearchTimeLog.txt";
 				PrintWriter write = new PrintWriter(new FileWriter(file, true));
 			    write.print("JDBC Execution Time: " + elapsedTime + ", ");
+			    write.flush();
 			    write.close();
+				System.out.println("JDBC Execution Time: " + elapsedTime + ", ");
 				System.out.println("In FindMovie: wrote to file");
 			} 
 			catch (IOException e) 
@@ -362,6 +367,7 @@ public class FindMovie extends HttpServlet {
 				
 				e.printStackTrace();
 			}
+			//out.print("<br> in find movie: right before forwarding to jsp file<br>");
 			if (session != null && session.getAttribute("movieList") != null)
 			{
 				session.removeAttribute("movieList");
@@ -381,7 +387,6 @@ public class FindMovie extends HttpServlet {
 			session.setAttribute("movieList", movieList);
 			RequestDispatcher rs = request.getRequestDispatcher("/DisplaySearch.jsp");
 			rs.forward(request, response);
-			c.closeConnection();
 			
 		}
 		catch (SQLException e)
@@ -391,7 +396,16 @@ public class FindMovie extends HttpServlet {
 		}
 		finally
 		{
+			
 			out.close();
+			try{
+				
+			// CLOSE CONNECTION
+				c.closeConnection();
+			}
+			catch(SQLException e){
+				System.out.println("Failed to close connection");
+			}
 		}
 		
 		

@@ -28,18 +28,23 @@ def parseFile(listOfLines: []) -> (int):
                 for token in tokenList:
                         timeList = token.split(":")
                         print(timeList)
-                        if timeList[0] == "JDBC Execution Time":
-                            cumulativeTJ += int(timeList[1])
-                        else:
-                            cumulativeTS += int(timeList[1].replace("\n", ""))
+                        if len(timeList) == 2:
+                            if timeList[0].strip() == "JDBC Execution Time":
+                                cumulativeTJ += int(timeList[1])
+                            elif timeList[0].strip() == "Servlet Execution Time":
+                                cumulativeTS += int(timeList[1])
                 numberOfLines += 1
         return (cumulativeTS/numberOfLines, cumulativeTJ/numberOfLines)
-    
 
+def convertToMillis(infoTuple: ()):
+    TS = infoTuple[0]/1000000
+    TJ = infoTuple[1]/1000000
+    print("TS in millis: " + str(TS) + " TJ in millis: " + str(TJ))
                         
                 
 if __name__ == "__main__":
     listOfLines = openFile()
     infoTuple = parseFile(listOfLines)
     print("TS: " + str(infoTuple[0]) + " TJ: " + str(infoTuple[1]))
+    convertToMillis(infoTuple)
     

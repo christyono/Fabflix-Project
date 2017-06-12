@@ -44,7 +44,9 @@ public class ConnectionPool2 implements ServletContextListener, ServletContextAt
      */
     public void contextDestroyed(ServletContextEvent arg0)  { 
          // TODO Auto-generated method stub
+    	System.out.println("#########################################");
     	System.out.println("Connection Pool has been closed");
+    	System.out.println("\n\n\n\n\n");
     }
 
 	/**
@@ -60,7 +62,8 @@ public class ConnectionPool2 implements ServletContextListener, ServletContextAt
      */
     public void contextInitialized(ServletContextEvent event)  { 
          // TODO Auto-generated method stub
-
+    	System.out.println("#########################################");
+    	System.out.println("\n\n\n\n\n");
     	try
 		{
 			Context initCtx = new InitialContext();			

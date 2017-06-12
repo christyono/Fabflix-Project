@@ -41,14 +41,18 @@ public class SearchResponseTime implements Filter {
 		// place your code here
 		long startTime = System.nanoTime();
 		// pass the request along the filter chain
+		System.out.println("Before doFilter");
 		chain.doFilter(request, response);
 		long endTime = System.nanoTime();
 		long elapsedTime = endTime - startTime; // elapsed time in nano seconds. Note: print the values in nano seconds 
+//		System.out.println("In SearchResponseTime: wrote to file");
+		System.out.println("Servlet Execution Time: " + elapsedTime);
 		try
 		{
 			String file = "SearchTimeLog.txt";
 			PrintWriter write = new PrintWriter(new FileWriter(file, true));
 		    write.println("Servlet Execution Time: " + elapsedTime);
+		    write.flush();
 		    write.close();
 		    System.out.println("In SearchResponseTime: wrote to file");
 		} 
@@ -65,6 +69,7 @@ public class SearchResponseTime implements Filter {
 	 */
 	public void init(FilterConfig fConfig) throws ServletException {
 		// TODO Auto-generated method stub
+		System.out.println("SearchResponseFilter has been placed into service" );
 	}
 
 }
